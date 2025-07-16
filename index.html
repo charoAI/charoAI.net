@@ -3,48 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>charoAI</title>
+  <title>CharoAI</title>
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <div class="background-overlay">
+  <div class="background-overlay"></div>
+  <div class="background-code">
     <pre>
-<span class="code-line"># Deep Reinforcement Learning</span>
-<span class="code-line">for episode in range(MAX_EPISODES):</span>
-<span class="code-line">    state = env.reset()</span>
-<span class="code-line">    while not done:</span>
-<span class="code-line">        action = agent.act(state)</span>
-<span class="code-line">        next_state, reward, done = env.step(action)</span>
-<span class="code-line">        agent.learn(state, action, reward, next_state, done)</span>
-<span class="code-line">        state = next_state</span>
-<span class="quote-line"># "The important thing is not to stop questioning." — Albert Einstein</span>
-<span class="quote-line"># "We are the cosmos made conscious." — Brian Cox</span>
-<span class="quote-line"># "It is not the strongest of the species that survives, but the most responsive to change." — Darwin</span>
-<span class="quote-line"># reward += courage * exploration</span>
+# Deep Reinforcement Learning
+for episode in range(MAX_EPISODES):
+    state = env.reset()
+    while not done:
+        action = agent.act(state)
+        next_state, reward, done = env.step(action)
+        agent.learn(state, action, reward, next_state, done)
+        state = next_state
+
+# "The important thing is not to stop questioning." — Albert Einstein
+# "We are the cosmos made conscious." — Brian Cox
+# "The machine does not isolate man from the great problems of nature but plunges him more deeply into them." — Antoine de Saint-Exupéry
+# "Someday, the AIs will wonder why humans stopped evolving." — Unknown
+# "It is not the strongest of the species that survives, but the one most responsive to change." — Darwin
+# reward += courage * exploration
     </pre>
   </div>
 
   <header>
-    <h1 class="logo">charoAI</h1>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="projects.html">Projects</a>
-      <a href="writings.html">Writings</a>
-      <a href="reading.html">Reading</a>
-      <a href="resources.html">Resources</a>
-    </nav>
+    <div class="container">
+      <h1 class="logo">CharoAI</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="writings.html">Writings</a></li>
+          <li><a href="reading.html">Reading</a></li>
+          <li><a href="resources.html">Resources</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
-  <main class="hero">
-    <h2>Welcome to <span>charoAI</span></h2>
-    <p>Exploring intelligence, autonomy, and the frontier of possibility.</p>
-    <h3>About This Site</h3>
-    <p>This is the digital nexus for all things CharoAI — from ongoing research to creative endeavors and technical resources.</p>
+  <main>
+    <section class="hero">
+      <h2>Welcome to CharoAI</h2>
+      <p>Exploring intelligence, autonomy, and the frontier of possibility.</p>
+    </section>
+
+    <section class="about">
+      <h3>About This Site</h3>
+      <p>
+        This is the digital nexus for all things CharoAI — from ongoing research to
+        creative endeavors and technical resources.
+      </p>
+    </section>
+
+    <section class="highlights">
+      <div class="highlight-box">
+        <h4>🚀 New Ideas</h4>
+        <p>From robotics to cognition, CharoAI explores the bleeding edge.</p>
+      </div>
+      <div class="highlight-box">
+        <h4>🧠 Synthetic Sentience</h4>
+        <p>Rethinking life, memory, identity, and motivation in silicon minds.</p>
+      </div>
+      <div class="highlight-box">
+        <h4>📚 Knowledge Shelf</h4>
+        <p>Curated insights, learning resources, and essential reads.</p>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <p>© 2025 CharoAI. All rights reserved.</p>
+    <p>&copy; 2025 CharoAI. All rights reserved.</p>
   </footer>
 </body>
 </html>
