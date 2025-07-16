@@ -77,3 +77,33 @@ h1, h2 {
   padding: 1rem;
   border-top: 1px solid #333;
 }
+/* Subtle animated background code effect */
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.background-content {
+  white-space: pre;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: rgba(0, 255, 255, 0.03);
+  animation: scrollCode 60s linear infinite;
+  line-height: 1.5;
+  padding: 2rem;
+}
+
+@keyframes scrollCode {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
