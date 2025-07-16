@@ -1,4 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Example placeholder if you'd like hover effects, etc.
-  console.log("CharoAI loaded.");
-});
+// Fade-in on scroll
+const fadeIns = document.querySelectorAll('.fade-in');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+fadeIns.forEach(section => observer.observe(section));

@@ -1,77 +1,128 @@
 body {
-  margin: 0;
-  font-family: 'Courier New', monospace;
-  background-color: #111;
+  background: #0d0d0d;
   color: #eee;
+  font-family: 'Share Tech Mono', monospace;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-.code-background {
-  background-color: #000;
-  color: #0ff;
-  padding: 1rem;
-  font-size: 0.8rem;
+.background-code {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  color: rgba(255, 255, 255, 0.07);
+  font-size: 14px;
+  line-height: 1.4;
+  pointer-events: none;
   white-space: pre-wrap;
+  padding: 2rem;
+  z-index: 0;
+  overflow: hidden;
 }
 
-header {
+.site-header {
+  position: relative;
+  background: transparent;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 2rem;
-  border-bottom: 1px solid #0ff;
-  background-color: #111;
+  z-index: 2;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
+.site-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  color: #00ffff;
+  margin: 0;
 }
 
-nav a {
-  margin-left: 1rem;
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  padding: 0;
+}
+
+.nav-links a {
   text-decoration: none;
-  color: #00faff;
-  font-weight: bold;
-}
-
-nav a.active {
-  border-bottom: 2px solid #0ff;
+  color: #00ffff;
 }
 
 main {
-  text-align: center;
-  padding: 3rem 1rem;
+  position: relative;
+  padding: 2rem;
+  z-index: 1;
 }
 
-.glow {
-  color: #0ff;
-  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
-  font-size: 2.5rem;
+.neon {
+  font-size: 2rem;
+  color: #00ffff;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+  font-family: 'Orbitron', sans-serif;
 }
 
-.section-title {
-  font-size: 1.5rem;
-  color: #00faff;
-  margin-top: 3rem;
+.highlight {
+  font-size: 1.4rem;
+  color: #00ffff;
 }
 
-.feature {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.focus-list {
+  list-style-type: disc;
+  padding-left: 2rem;
+}
+
+.quote-ticker {
+  overflow: hidden;
+  white-space: nowrap;
   margin: 2rem 0;
 }
 
-.feature .emoji {
-  font-size: 2rem;
-  margin-right: 1rem;
+.ticker span {
+  display: inline-block;
+  animation: ticker 60s linear infinite;
+  color: #aaa;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.terminal-box {
+  background: #111;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  color: #0f0;
+}
+
+.prompt {
+  color: #0ff;
+}
+
+.response {
+  color: #ff99cc;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 footer {
   text-align: center;
-  padding: 2rem 0;
-  border-top: 1px solid #0ff;
-  font-size: 0.9rem;
-  color: #888;
+  padding: 2rem;
+  color: #444;
+  z-index: 1;
+  position: relative;
 }
