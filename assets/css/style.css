@@ -1,117 +1,120 @@
+/* style.css */
 body {
-  background: #0d0d0d;
-  color: #eee;
-  font-family: 'Share Tech Mono', monospace;
   margin: 0;
-  padding: 0;
+  font-family: 'Share Tech Mono', monospace;
+  background-color: #0d0d0d;
+  color: #fff;
   overflow-x: hidden;
 }
 
-.background-code {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  color: rgba(255, 255, 255, 0.07);
-  font-size: 14px;
-  line-height: 1.4;
-  pointer-events: none;
-  white-space: pre-wrap;
-  padding: 2rem;
-  z-index: 0;
-  overflow: hidden;
+a {
+  color: #00ffff;
+  text-decoration: none;
 }
 
 .site-header {
-  position: relative;
-  background: transparent;
-  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 2;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #00ffff;
 }
 
 .site-title {
   font-family: 'Orbitron', sans-serif;
   font-size: 2rem;
   color: #00ffff;
-  margin: 0;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
   gap: 1.5rem;
+  margin: 0;
   padding: 0;
 }
 
-.nav-links a {
-  text-decoration: none;
-  color: #00ffff;
+.nav-links li a:hover {
+  text-decoration: underline;
+}
+
+.background-code {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-height: 40vh;
+  overflow: hidden;
+  opacity: 0.07;
+  font-size: 0.9rem;
+  pointer-events: none;
+  white-space: pre-wrap;
+  z-index: -1;
 }
 
 main {
-  position: relative;
-  padding: 2rem;
-  z-index: 1;
+  padding: 4rem 2rem 2rem 2rem;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .neon {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #00ffff;
-  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
-  font-family: 'Orbitron', sans-serif;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
 }
 
 .highlight {
-  font-size: 1.4rem;
   color: #00ffff;
+  margin-bottom: 1rem;
 }
 
 .focus-list {
-  list-style-type: disc;
+  list-style: disc;
   padding-left: 2rem;
 }
 
 .quote-ticker {
+  margin: 4rem 0;
   overflow: hidden;
   white-space: nowrap;
-  margin: 2rem 0;
 }
 
-.ticker span {
+.ticker {
   display: inline-block;
-  animation: ticker 60s linear infinite;
-  color: #aaa;
+  animation: scroll-left 60s linear infinite;
+  color: #888;
 }
 
-@keyframes ticker {
+@keyframes scroll-left {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
 .terminal-box {
-  background: #111;
-  border-radius: 8px;
+  background-color: #111;
   padding: 1rem;
+  border: 1px solid #00ffff;
   font-family: 'Share Tech Mono', monospace;
-  color: #0f0;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .prompt {
-  color: #0ff;
+  color: #00ffff;
 }
 
 .response {
-  color: #ff99cc;
+  color: #f08fff;
 }
 
 .fade-in {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 1s ease, transform 1s ease;
+  transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
 .fade-in.visible {
@@ -122,7 +125,6 @@ main {
 footer {
   text-align: center;
   padding: 2rem;
-  color: #444;
-  z-index: 1;
-  position: relative;
+  font-size: 0.9rem;
+  color: #666;
 }
