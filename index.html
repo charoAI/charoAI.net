@@ -50,17 +50,17 @@ for episode in range(MAX_EPISODES):
 
     <section class="fade-in" id="about">
       <h3 class="highlight">About This Site</h3>
-      <p>This is the digital nexus for all things charoAI — from ongoing research to creative endeavors and technical resources.</p>
+      <p>This is the digital nexus for all things CharoAI — from ongoing research to creative endeavors and technical resources.</p>
     </section>
 
-    <section class="fade-in" id="focus">
+    <section class="focus-areas fade-in">
       <h3 class="highlight">Focus Areas</h3>
       <ul class="focus-list">
-        <li title="Designing minds from scratch">Synthetic Cognitive Architectures</li>
-        <li title="Emotion, memory, drive">AI Psychology and Motivation</li>
-        <li title="Agents that think and act">Reinforcement Learning Systems</li>
-        <li title="Embodied AI">Robotics and Autonomy</li>
-        <li title="Simulations of evolving behavior">Simulated Worlds</li>
+        <li>Synthetic Cognitive Architectures</li>
+        <li>AI Psychology and Motivation</li>
+        <li>Reinforcement Learning Systems</li>
+        <li>Robotics and Autonomy</li>
+        <li>Simulated Worlds</li>
       </ul>
     </section>
 
@@ -95,17 +95,6 @@ for episode in range(MAX_EPISODES):
   <footer>
     <p>© 2025 charoAI. All rights reserved.</p>
   </footer>
-
-  <script>
-    const fadeIns = document.querySelectorAll('.fade-in');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-
-    fadeIns.forEach(section => observer.observe(section));
-  </script>
 
   <script src="assets/js/script.js"></script>
 </body>
