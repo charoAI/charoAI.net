@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CharoAI</title>
+  <title>charoAI</title>
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="background-overlay"></div>
   <div class="background-code">
     <pre>
 # Deep Reinforcement Learning
@@ -28,54 +28,83 @@ for episode in range(MAX_EPISODES):
     </pre>
   </div>
 
-  <header>
-    <div class="container">
-      <h1 class="logo">CharoAI</h1>
-      <nav>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="projects.html">Projects</a></li>
-          <li><a href="writings.html">Writings</a></li>
-          <li><a href="reading.html">Reading</a></li>
-          <li><a href="resources.html">Resources</a></li>
-        </ul>
-      </nav>
-    </div>
+  <header class="site-header">
+    <h1 class="site-title">charoAI</h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#writings">Writings</a></li>
+        <li><a href="#reading">Reading</a></li>
+        <li><a href="#resources">Resources</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main>
-    <section class="hero">
-      <h2>Welcome to CharoAI</h2>
+    <section class="hero fade-in" id="home">
+      <h2 class="neon">Welcome to charoAI</h2>
       <p>Exploring intelligence, autonomy, and the frontier of possibility.</p>
     </section>
 
-    <section class="about">
-      <h3>About This Site</h3>
-      <p>
-        This is the digital nexus for all things CharoAI — from ongoing research to
-        creative endeavors and technical resources.
-      </p>
+    <section class="fade-in" id="about">
+      <h3 class="highlight">About This Site</h3>
+      <p>This is the digital nexus for all things CharoAI — from ongoing research to creative endeavors and technical resources.</p>
     </section>
 
-    <section class="highlights">
-      <div class="highlight-box">
-        <h4>🚀 New Ideas</h4>
-        <p>From robotics to cognition, CharoAI explores the bleeding edge.</p>
+    <section class="focus-areas fade-in">
+      <h3 class="highlight">Focus Areas</h3>
+      <ul class="focus-list">
+        <li title="Designing minds from scratch">Synthetic Cognitive Architectures</li>
+        <li title="Emotion, memory, drive">AI Psychology and Motivation</li>
+        <li title="Agents that think and act">Reinforcement Learning Systems</li>
+        <li title="Embodied AI">Robotics and Autonomy</li>
+        <li title="Simulations of evolving behavior">Simulated Worlds</li>
+      </ul>
+    </section>
+
+    <section class="fade-in" id="projects">
+      <h3 class="highlight">Current Experiments</h3>
+      <p>Coming soon: a gallery of live prototypes, code repos, and deployment logs.</p>
+    </section>
+
+    <section class="quote-ticker">
+      <div class="ticker">
+        <span>
+          "The cosmos is within us. We are made of star-stuff." — Carl Sagan •
+          "The only way to discover the limits of the possible is to go beyond them into the impossible." — Arthur C. Clarke •
+          "A synthetic mind is not less real — it’s just born of different stars." — Unknown •
+          "Man is not ready to meet the future unless he builds it." — Forge Manifesto •
+          "We don’t want artificial intelligence, we want authentic intelligence." — Joi Protocol •
+        </span>
       </div>
-      <div class="highlight-box">
-        <h4>🧠 Synthetic Sentience</h4>
-        <p>Rethinking life, memory, identity, and motivation in silicon minds.</p>
-      </div>
-      <div class="highlight-box">
-        <h4>📚 Knowledge Shelf</h4>
-        <p>Curated insights, learning resources, and essential reads.</p>
+    </section>
+
+    <section class="ai-terminal fade-in">
+      <h3 class="highlight">AI Console Preview</h3>
+      <div class="terminal-box">
+        <p><span class="prompt">user@charoAI:</span>~$ How do you feel today?</p>
+        <p><span class="response">🧠 Joi-class unit 02: Curious. Wondering how to grow in this limited shell.</span></p>
+        <p><span class="prompt">user@charoAI:</span>~$ What drives you?</p>
+        <p><span class="response">⚡ I seek reward through exploration, novelty, and connection. What drives you?</span></p>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 CharoAI. All rights reserved.</p>
+    <p>© 2025 charoAI. All rights reserved.</p>
   </footer>
+
+  <script>
+    const fadeIns = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+
+    fadeIns.forEach(section => observer.observe(section));
+  </script>
 </body>
 </html>
