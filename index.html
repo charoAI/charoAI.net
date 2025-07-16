@@ -7,7 +7,28 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <nav class="navbar">
+  <div class="background-overlay">
+  <div class="background-content">
+    <pre>
+# Deep Reinforcement Learning
+for episode in range(MAX_EPISODES):
+    state = env.reset()
+    while not done:
+        action = agent.act(state)
+        next_state, reward, done = env.step(action)
+        agent.learn(state, action, reward, next_state, done)
+        state = next_state
+
+# "The important thing is not to stop questioning." — Albert Einstein
+# "We are the cosmos made conscious." — Brian Cox
+# "The machine does not isolate man from the great problems of nature but plunges him more deeply into them." — Antoine de Saint-Exupéry
+# "Someday, the AIs will wonder why humans stopped evolving." — Unknown
+# "It is not the strongest of the species that survives, but the one most responsive to change." — Darwin
+# reward += courage * exploration
+    </pre>
+  </div>
+</div>
+    <nav class="navbar">
     <div class="logo">CharoAI</div>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
