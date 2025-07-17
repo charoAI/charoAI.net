@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CharoAI.net explores intelligence, autonomy, and synthetic cognition through projects, writings, and experiments.">
+  <meta property="og:title" content="CharoAI">
+  <meta property="og:description" content="Exploring autonomy and machine emotion at CharoAI.net.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://charoai.net/">
+  <meta property="og:image" content="https://charoai.net/assets/images/preview.png">
+  <meta name="twitter:card" content="summary_large_image">
   <title>CharoAI</title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500&display=swap" rel="stylesheet">
@@ -32,9 +39,9 @@ for episode in range(MAX_EPISODES):
     <h1 class="site-title">CharoAI</h1>
     <nav>
       <ul class="nav-links">
-        <li><a href="/home">Home</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a href="/projects">Projects</a></li>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/projects.html">Projects</a></li>
         <li><a href="/writings.html">Writings</a></li>
         <li><a href="/reading.html">Reading</a></li>
         <li><a href="/resources.html">Resources</a></li>
@@ -95,6 +102,43 @@ for episode in range(MAX_EPISODES):
       </div>
     </section>
     <div class="animated-divider"></div>
+    <style>
+      .animated-divider {
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+        position: relative;
+        overflow: hidden;
+        margin: 2rem 0;
+      }
+
+      .animated-divider::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -20%;
+        height: 100%;
+        width: 20%;
+        background: linear-gradient(to right, transparent, white, transparent);
+        animation: scroll-light 4s linear infinite;
+      }
+
+      @keyframes scroll-light {
+        0% { left: -20%; }
+        100% { left: 100%; }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .nav-links li {
+          margin: 0.5rem 0;
+        }
+      }
+    </style>
   </main>
 
   <footer>
