@@ -339,15 +339,22 @@ footer {
   height: 100%;
   width: 100px;
   background: linear-gradient(to right, transparent, white, transparent);
-  animation: slide-glow 5s linear infinite;
+  animation: slide-glow 6s linear infinite;
   opacity: 0.5;
+  left: -100px;
 }
 
 @keyframes slide-glow {
   0% {
     left: -100px;
+    opacity: 0.5;
+  }
+  80% {
+    left: 100%;
+    opacity: 0.5;
   }
   100% {
     left: 100%;
+    opacity: 0;
   }
 }
