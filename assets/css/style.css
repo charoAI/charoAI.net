@@ -128,3 +128,11 @@ footer {
   font-size: 0.9rem;
   color: #666;
 }
+
+.article-body {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
