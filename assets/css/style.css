@@ -173,6 +173,7 @@ footer {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  z-index: 0;
 }
 
 .signal-form-container {
@@ -238,7 +239,7 @@ footer {
   background-color: var(--neon);
   width: 20px;
   height: 20px;
-  z-index: 1;
+  z-index: 5;
 }
 
 .signal-pulse {
@@ -265,7 +266,7 @@ footer {
   position: absolute;
   height: 2px;
   background-color: var(--neon);
-  z-index: 1;
+  z-index: 5;
   transform-origin: left center;
   opacity: 0;
   transition: opacity 0.3s ease-in;
