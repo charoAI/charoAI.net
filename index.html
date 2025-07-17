@@ -121,6 +121,7 @@ for episode in range(MAX_EPISODES):
         width: 20%;
         background: linear-gradient(to right, transparent, white, transparent);
         animation: scroll-light 4s linear infinite;
+        animation-delay: var(--scroll-delay, 0s);
       }
 
       @keyframes scroll-light {
@@ -146,5 +147,11 @@ for episode in range(MAX_EPISODES):
   </footer>
 
   <script src="assets/js/script.js"></script>
+  <script>
+    document.querySelectorAll('.animated-divider').forEach(divider => {
+      const delay = Math.random() * 4; // random delay between 0 and 4 seconds
+      divider.style.setProperty('--scroll-delay', `${delay}s`);
+    });
+  </script>
 </body>
 </html>
