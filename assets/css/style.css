@@ -324,3 +324,30 @@ footer {
     padding: 0.5rem 0;
   }
 }
+# Subtle animated divider with glowing beam effect
+.divider {
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--neon), transparent);
+  position: relative;
+  overflow: hidden;
+  margin: 4rem 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100px;
+  background: linear-gradient(to right, transparent, white, transparent);
+  animation: slide-glow 5s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes slide-glow {
+  0% {
+    left: -100px;
+  }
+  100% {
+    left: 100%;
+  }
+}
