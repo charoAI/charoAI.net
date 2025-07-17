@@ -166,7 +166,7 @@ footer {
   /* background-image: url('/assets/images/space-map.jpg'); */
   /* background-size: cover; */
   /* background-position: center; */
-  background-color: rgba(255, 0, 0, 0.1);
+  background-color: rgb(0, 0, 0);
   min-height: 100vh;
   position: relative;
   display: flex;
