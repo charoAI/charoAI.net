@@ -1,4 +1,8 @@
 /* style.css */
+:root {
+  --neon: #00ffff;
+}
+
 body {
   margin: 0;
   font-family: 'Share Tech Mono', monospace;
@@ -8,7 +12,7 @@ body {
 }
 
 a {
-  color: #00ffff;
+  color: var(--neon);
   text-decoration: none;
 }
 
@@ -17,13 +21,13 @@ a {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid #00ffff;
+  border-bottom: 1px solid var(--neon);
 }
 
 .site-title {
   font-family: 'Orbitron', sans-serif;
   font-size: 2rem;
-  color: #00ffff;
+  color: var(--neon);
 }
 
 .nav-links {
@@ -79,12 +83,12 @@ main {
 
 .neon {
   font-size: 2.5rem;
-  color: #00ffff;
-  text-shadow: 0 0 2px #00ffff, 0 0 4px #00ffff;
+  color: var(--neon);
+  text-shadow: 0 0 2px var(--neon), 0 0 4px var(--neon);
 }
 
 .highlight {
-  color: #00ffff;
+  color: var(--neon);
   margin-bottom: 1rem;
 }
 
@@ -113,14 +117,14 @@ main {
 .terminal-box {
   background-color: #111;
   padding: 1rem;
-  border: 1px solid #00ffff;
+  border: 1px solid var(--neon);
   font-family: 'Share Tech Mono', monospace;
   max-width: 700px;
   margin: 0 auto;
 }
 
 .prompt {
-  color: #00ffff;
+  color: var(--neon);
 }
 
 .response {
@@ -130,12 +134,16 @@ main {
 .fade-in {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 1s ease-out, transform 1s ease-out;
+  visibility: hidden;
+  transition: opacity 1s ease-out, transform 1s ease-out, visibility 0s linear 1s;
+  will-change: opacity, transform;
 }
 
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 footer {
@@ -168,24 +176,40 @@ footer {
 }
 
 .signal-form-container {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(20, 20, 20, 0.8);
+  color: #fff;
   padding: 2rem;
   border-radius: 10px;
-  border: 1px solid #00ffff;
+  border: 1px solid var(--neon);
   max-width: 600px;
   width: 90%;
-  z-index: 1;
+  z-index: 10;
+  min-height: 200px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
 }
 
 .signal-form-container h2 {
-  color: #00ffff;
+  color: var(--neon);
   font-family: 'Orbitron', sans-serif;
   margin-bottom: 1rem;
 }
 
-.signal-form-container label,
+.signal-form-container label {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--neon);
+}
+
 .signal-form-container input,
 .signal-form-container textarea {
+  background-color: #111;
+  border: 1px solid var(--neon);
+  color: #fff;
+  padding: 0.5rem;
   display: block;
   width: 100%;
   margin-bottom: 1rem;
@@ -193,20 +217,12 @@ footer {
   font-family: 'Share Tech Mono', monospace;
 }
 
-.signal-form-container input,
-.signal-form-container textarea {
-  background-color: #111;
-  border: 1px solid #00ffff;
-  color: #fff;
-  padding: 0.5rem;
-}
-
 .signal-form-container button {
-  background-color: #00ffff;
+  background-color: var(--neon);
   color: #000;
   font-weight: bold;
   padding: 0.5rem 1rem;
-  border: none;
+  border: 1px solid var(--neon);
   cursor: pointer;
 }
 
@@ -219,17 +235,17 @@ footer {
 .signal-celestial {
   position: absolute;
   border-radius: 50%;
-  background-color: #00ffff;
+  background-color: var(--neon);
   width: 20px;
   height: 20px;
-  z-index: 0;
+  z-index: 1;
 }
 
 .signal-pulse {
   position: absolute;
   width: 10px;
   height: 10px;
-  border: 2px solid #00ffff;
+  border: 2px solid var(--neon);
   border-radius: 50%;
   animation: pulse-signal 2s ease-out infinite;
 }
@@ -248,7 +264,7 @@ footer {
 .signal-line {
   position: absolute;
   height: 2px;
-  background-color: #00ffff;
+  background-color: var(--neon);
   z-index: 1;
   transform-origin: left center;
   opacity: 0;
