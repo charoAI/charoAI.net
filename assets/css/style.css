@@ -52,6 +52,22 @@ a {
   z-index: -1;
 }
 
+.background-code pre {
+  animation: scroll-code 60s linear infinite;
+  display: inline-block;
+  white-space: pre;
+  font-size: 1.8rem; /* doubled from original 0.9rem */
+}
+
+@keyframes scroll-code {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
 main {
   padding: 4rem 2rem 2rem 2rem;
 }
