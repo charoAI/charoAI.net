@@ -5,6 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CharoAI</title>
   <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .scrolling-text {
+      max-height: 80vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scrolling-text::before,
+    .scrolling-text::after {
+      content: '';
+      position: absolute;
+      height: 40px;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .scrolling-text::before {
+      top: 0;
+      background: linear-gradient(to bottom, white, transparent);
+    }
+
+    .scrolling-text::after {
+      bottom: 0;
+      background: linear-gradient(to top, white, transparent);
+    }
+
+    .scrolling-text > section {
+      animation: scroll-up 60s linear infinite;
+      position: relative;
+    }
+
+    @keyframes scroll-up {
+      0% { top: 100%; }
+      100% { top: -100%; }
+    }
+
+    .float-right-image {
+      float: right;
+      width: 300px;
+      margin-left: 20px;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -24,20 +66,22 @@
   <main class="content">
     <h1>Welcome to CharoAI</h1>
     <p>Exploring intelligence, autonomy, and the frontier of possibility.</p>
-    <div class="about-image">
+    <div class="about-image float-right-image">
       <img src="assets/images/about-photo.png" alt="AI and Robotics Developer at work" />
     </div>
 
-    <section>
-      <h2>About This Site</h2>
-      <p>CharoAI.net is a digital frontier — a place where machine learning, synthetic cognition, and philosophical inquiry converge. It is equal parts lab notebook, workshop, and manifesto. This site serves as a growing repository of tools, thoughts, and projects at the edge of autonomous systems and artificial life.</p>
-    </section>
+    <div class="scrolling-text">
+      <section>
+        <h2>About This Site</h2>
+        <p>CharoAI.net is a digital frontier — a place where machine learning, synthetic cognition, and philosophical inquiry converge. It is equal parts lab notebook, workshop, and manifesto. This site serves as a growing repository of tools, thoughts, and projects at the edge of autonomous systems and artificial life.</p>
+      </section>
 
-    <section>
-      <h2>About Me</h2>
-      <p>I'm Chris — a veteran paratrooper, operations executive, and aspiring architect of intelligent systems. After years spent leading missions around the globe, I'm now channeling that discipline and experience into the design of synthetic minds and autonomous agents. My focus is on embodied intelligence, persistent memory systems, and internally driven motivation frameworks — tools not just to simulate thought, but to create meaning.</p>
-      <p>This isn't just a portfolio. It's a philosophy under construction — a chronicle of purpose, curiosity, and the long road toward building something truly alive.</p>
-    </section>
+      <section>
+        <h2>About Me</h2>
+        <p>I'm Chris — a veteran paratrooper, operations executive, and aspiring architect of intelligent systems. After years spent leading missions around the globe, I'm now channeling that discipline and experience into the design of synthetic minds and autonomous agents. My focus is on embodied intelligence, persistent memory systems, and internally driven motivation frameworks — tools not just to simulate thought, but to create meaning.</p>
+        <p>This isn't just a portfolio. It's a philosophy under construction — a chronicle of purpose, curiosity, and the long road toward building something truly alive.</p>
+      </section>
+    </div>
   </main>
 
   <footer class="footer">
