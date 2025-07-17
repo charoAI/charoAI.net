@@ -11,7 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, { threshold: 0.1 });
 
-  fadeIns.forEach(section => observer.observe(section));
+  fadeIns.forEach(section => {
+    observer.observe(section);
+    // Force-check visibility for elements already in view
+    if (section.getBoundingClientRect().top < window.innerHeight) {
+      section.classList.add('visible');
+    }
+  });
 
   const form = document.querySelector('form');
   const signal = document.querySelector('.signal-line');
