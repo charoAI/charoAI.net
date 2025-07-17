@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex">
+  <title>Signal Uplink</title>
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <h1 class="site-title">CharoAI</h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/writings.html">Writings</a></li>
+        <li><a href="/reading.html">Reading</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="signal-uplink fade-in">
+    <section class="space-map-background">
+      <div class="contact-container">
+        <h1>Signal Uplink</h1>
+        <p>Need to get in touch? Dispatch your message across the void — we’re always listening.</p>
+
+        <form class="signal-form-container" aria-label="Contact Form" novalidate>
+          <label for="name">Your Name</label>
+          <input type="text" id="name" name="name" required aria-label="Your Name" aria-required="true" />
+
+          <label for="email">Your Email</label>
+          <input type="email" id="email" name="email" required aria-label="Your Email" aria-required="true" />
+
+          <label for="message">Your Message</label>
+          <textarea id="message" name="message" rows="5" required aria-label="Your Message" aria-required="true"></textarea>
+
+          <button type="submit" id="launch-button">Launch Signal</button>
+        </form>
+
+        <div class="form-status" aria-live="polite"></div>
+
+        <p class="confirmation-message" style="display: none;">Signal sent successfully. We'll be in touch soon.</p>
+
+        <div class="signal-animation">
+          <div class="planet origin"></div>
+          <div class="signal-path"></div>
+          <div class="planet destination"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CharoAI.net All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

@@ -152,3 +152,132 @@ footer {
   line-height: 1.6;
   font-size: 1.1rem;
 }
+
+/* SIGNAL UPLINK PAGE STYLES */
+
+.signal-uplink {
+  background-image: url('/assets/images/space-map.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.signal-form-container {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid #00ffff;
+  max-width: 600px;
+  width: 90%;
+  z-index: 1;
+}
+
+.signal-form-container h2 {
+  color: #00ffff;
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 1rem;
+}
+
+.signal-form-container label,
+.signal-form-container input,
+.signal-form-container textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.signal-form-container input,
+.signal-form-container textarea {
+  background-color: #111;
+  border: 1px solid #00ffff;
+  color: #fff;
+  padding: 0.5rem;
+}
+
+.signal-form-container button {
+  background-color: #00ffff;
+  color: #000;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.signal-form-container button:hover {
+  background-color: #00cccc;
+}
+
+/* Signal animation elements */
+
+.signal-celestial {
+  position: absolute;
+  border-radius: 50%;
+  background-color: #00ffff;
+  width: 20px;
+  height: 20px;
+  z-index: 0;
+}
+
+.signal-pulse {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #00ffff;
+  border-radius: 50%;
+  animation: pulse-signal 2s ease-out infinite;
+}
+
+@keyframes pulse-signal {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+/* Signal line animation for signal traveling between celestial bodies */
+.signal-line {
+  position: absolute;
+  height: 2px;
+  background-color: #00ffff;
+  z-index: 1;
+  transform-origin: left center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  width: 0;
+}
+
+.animate-line {
+  animation: send-signal 1.5s ease-out forwards;
+}
+
+@keyframes send-signal {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+/* Optional: Distinct positioning for origin and destination celestial bodies */
+#origin {
+  top: 20%;
+  left: 10%;
+}
+
+#destination {
+  bottom: 20%;
+  right: 10%;
+}
