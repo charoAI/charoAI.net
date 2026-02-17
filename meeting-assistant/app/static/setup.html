@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meeting Assistant Setup</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem auto;
+        max-width: 820px;
+        padding: 0 1rem;
+      }
+      .platform-options {
+        display: flex;
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .platform-btn {
+        border: 1px solid #777;
+        background: #fff;
+        border-radius: 8px;
+        padding: 0.8rem 1.2rem;
+        cursor: pointer;
+      }
+      .platform-btn.selected {
+        border-color: #0059ff;
+        background: #edf2ff;
+      }
+      label { display: block; margin-top: 1rem; font-weight: 600; }
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        margin-top: 0.35rem;
+      }
+      button[type="submit"] {
+        margin-top: 1.2rem;
+        padding: 0.6rem 1rem;
+      }
+      #result { margin-top: 1rem; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Meeting Assistant First-Time Setup</h1>
+    <p>Pick your machine type and configure where your notes and integrations should go.</p>
+
+    <form id="setup-form">
+      <label>What machine are you using?</label>
+      <div class="platform-options">
+        <button type="button" class="platform-btn" data-platform="mac">Mac</button>
+        <button type="button" class="platform-btn" data-platform="windows">Windows</button>
+      </div>
+
+      <label for="notes_path">Notes save path</label>
+      <input id="notes_path" type="text" placeholder="/Users/you/Obsidian/Meetings or C:\\Users\\you\\Obsidian\\Meetings" required />
+
+      <label for="assistant_webhook_url">Executive assistant webhook URL (optional)</label>
+      <input id="assistant_webhook_url" type="url" placeholder="http://localhost:9000/hooks/meeting-finalized" />
+
+      <label for="calendar_api_key">Calendar API key (optional)</label>
+      <input id="calendar_api_key" type="password" />
+
+      <label for="task_api_key">Task API key (optional)</label>
+      <input id="task_api_key" type="password" />
+
+      <button type="submit">Save setup</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      const buttons = document.querySelectorAll('.platform-btn');
+      let machineType = null;
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          machineType = btn.dataset.platform;
+        });
+      });
+
+      document.getElementById('setup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const result = document.getElementById('result');
+
+        if (!machineType) {
+          result.textContent = 'Please select Mac or Windows first.';
+          return;
+        }
+
+        const payload = {
+          machine_type: machineType,
+          notes_path: document.getElementById('notes_path').value,
+          assistant_webhook_url: document.getElementById('assistant_webhook_url').value || null,
+          calendar_api_key: document.getElementById('calendar_api_key').value || null,
+          task_api_key: document.getElementById('task_api_key').value || null,
+        };
+
+        const resp = await fetch('/setup/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await resp.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      });
+    </script>
+  </body>
+</html>
