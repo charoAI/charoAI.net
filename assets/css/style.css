@@ -365,3 +365,106 @@ footer {
 .divider:nth-of-type(3)::before { --glow-delay: 2s; }
 .divider:nth-of-type(4)::before { --glow-delay: 3s; }
 .divider:nth-of-type(5)::before { --glow-delay: 4s; }
+
+/* AGENT DASHBOARD MOCKUP */
+.dashboard-main {
+  padding-top: 2rem;
+}
+
+.dashboard-top {
+  margin-bottom: 2rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card,
+.panel {
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.12);
+}
+
+.kpi-card.alert {
+  border-color: #ff5c8a;
+  box-shadow: 0 0 10px rgba(255, 92, 138, 0.2);
+}
+
+.kpi-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  color: var(--neon);
+  margin: 0.25rem 0;
+}
+
+.kpi-sub { color: #a8b3b8; }
+
+.panel-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.status-table th, .status-table td {
+  border-bottom: 1px solid rgba(0,255,255,0.2);
+  padding: 0.55rem;
+  text-align: left;
+}
+
+.status {
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+.status.up { background: rgba(88, 236, 143, 0.2); color: #58ec8f; }
+.status.warn { background: rgba(255, 211, 94, 0.2); color: #ffd35e; }
+.status.down { background: rgba(255, 92, 138, 0.2); color: #ff5c8a; }
+
+.fake-chart {
+  height: 180px;
+  background: linear-gradient(180deg, rgba(0,255,255,0.06), rgba(0,0,0,0.4));
+  border: 1px solid rgba(0,255,255,0.25);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fake-chart .line {
+  position: absolute;
+  left: 0; right: 0; top: 35%;
+  height: 2px;
+  background: linear-gradient(90deg, #00ffff, #f08fff, #00ffff);
+  box-shadow: 0 0 8px #00ffff;
+  animation: pulse-line 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-line {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(40px); }
+}
+
+.legend {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 1rem;
+  color: #9ba9b1;
+}
+
+.event-feed {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.event-feed li { margin-bottom: 0.6rem; }
