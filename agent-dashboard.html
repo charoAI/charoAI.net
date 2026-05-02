@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CharoAI | Agent Dashboard Mockup</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-code">
+    <pre><code># agent heartbeat
+agent.emit('heartbeat', { status: 'active', task: 'triage' })
+usage.track({ window: '1h', input: 12222, output: 4101, total: 16323 })
+alerts.raiseIf(retries > 3 || timeoutMs > 30000)
+    </code></pre>
+  </div>
+
+  <header class="site-header">
+    <h1 class="site-title">CharoAI</h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/writings.html">Writings</a></li>
+        <li><a href="/agent-dashboard.html">Agent Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="dashboard-main">
+    <section class="dashboard-top">
+      <h2 class="neon">Agent Mission Control</h2>
+      <p>Live operations, usage analytics, and reliability signals in one always-on console.</p>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi-card">
+        <h3>Active Agents</h3>
+        <p class="kpi-value">12</p>
+        <p class="kpi-sub">+2 in last hour</p>
+      </article>
+      <article class="kpi-card">
+        <h3>Token Burn (1h)</h3>
+        <p class="kpi-value">1.42M</p>
+        <p class="kpi-sub">Input 0.98M / Output 0.44M</p>
+      </article>
+      <article class="kpi-card">
+        <h3>Task Success</h3>
+        <p class="kpi-value">93.7%</p>
+        <p class="kpi-sub">24h rolling</p>
+      </article>
+      <article class="kpi-card alert">
+        <h3>Open Alerts</h3>
+        <p class="kpi-value">3</p>
+        <p class="kpi-sub">1 critical · 2 warning</p>
+      </article>
+    </section>
+
+    <section class="panel-grid">
+      <article class="panel">
+        <h3 class="highlight">Live Agent Status</h3>
+        <table class="status-table">
+          <thead><tr><th>Agent</th><th>Status</th><th>Current Task</th><th>Last Heartbeat</th><th>1h Tokens</th></tr></thead>
+          <tbody>
+            <tr><td>joi-research-01</td><td><span class="status up">UP</span></td><td>Literature scan</td><td>4s ago</td><td>128k</td></tr>
+            <tr><td>builder-ops-02</td><td><span class="status up">UP</span></td><td>Patch + tests</td><td>9s ago</td><td>212k</td></tr>
+            <tr><td>support-triage-07</td><td><span class="status warn">DEGRADED</span></td><td>Queue triage</td><td>41s ago</td><td>96k</td></tr>
+            <tr><td>crawler-news-04</td><td><span class="status down">DOWN</span></td><td>Feed sync</td><td>3m ago</td><td>12k</td></tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="panel">
+        <h3 class="highlight">Token Usage Trend</h3>
+        <div class="fake-chart" aria-label="Mock line chart">
+          <div class="line"></div>
+        </div>
+        <div class="legend"><span>■ Input</span><span>■ Output</span><span>■ Total</span></div>
+      </article>
+
+      <article class="panel">
+        <h3 class="highlight">Reliability Feed</h3>
+        <ul class="event-feed">
+          <li><strong>Critical:</strong> crawler-news-04 timeout loop exceeded retry policy.</li>
+          <li><strong>Warning:</strong> support-triage-07 tool latency crossed 95th percentile.</li>
+          <li><strong>Recovered:</strong> builder-ops-02 fallback model engaged successfully.</li>
+          <li><strong>Info:</strong> 18 tasks completed in the last 10 minutes.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 CharoAI.net All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
