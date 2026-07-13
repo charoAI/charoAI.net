@@ -1,0 +1,8 @@
+# Offline track: NO dependencies — the whole course runs on the Python 3.10+
+# standard library. Install the packages below only for the optional tracks.
+
+# Live track (LLM extraction, embeddings, grounded generation):
+openai>=1.40
+
+# Production graph store track:
+neo4j>=5.20
