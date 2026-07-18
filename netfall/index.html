@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NETFALL — learn Python by looting the dead internet</title>
+<meta name="description" content="NETFALL: a hacking incremental game where every script is real Python. Loot the abandoned internet, learn to code.">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#07090b">
+<link rel="stylesheet" href="css/netfall.css">
+<script>
+// Cross-origin isolation bootstrap. SharedArrayBuffer (which powers the
+// blocking Python bridge) requires COOP/COEP headers; on static hosts the
+// service worker adds them, then we reload once so this page picks them up.
+(async () => {
+  if (window.crossOriginIsolated) return;
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    await navigator.serviceWorker.register('./coi-serviceworker.js');
+    await navigator.serviceWorker.ready;
+    if (!sessionStorage.getItem('netfall-coi-reload')) {
+      sessionStorage.setItem('netfall-coi-reload', '1');
+      location.reload();
+    }
+  } catch (e) {
+    console.warn('COI service worker registration failed:', e);
+  }
+})();
+</script>
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="brand">NET<span>FALL</span></div>
+    <div class="tb-group">
+      <div class="tb-stat"><label>credits</label><span id="tb-money">$0</span><span id="tb-income" class="tb-income"></span></div>
+      <div class="tb-stat"><label>skill</label><span id="tb-level">skill 1</span>
+        <div class="xpbar"><div id="tb-xpbar"></div></div>
+      </div>
+      <div class="tb-stat"><label>rig RAM</label><span id="tb-ram">0/8GB</span></div>
+      <div class="tb-stat"><label>scripts</label><span id="tb-procs">0</span></div>
+    </div>
+  </header>
+
+  <nav id="nav">
+    <button class="nav-tab active" data-tab="terminal">Terminal</button>
+    <button class="nav-tab" data-tab="editor">Editor</button>
+    <button class="nav-tab" data-tab="scripts">Scripts</button>
+    <button class="nav-tab" data-tab="network">Network</button>
+    <button class="nav-tab" data-tab="lessons">Lessons</button>
+    <button class="nav-tab" data-tab="docs">Docs</button>
+  </nav>
+
+  <main id="main">
+    <section id="panel-terminal" class="panel active">
+      <div id="term-out"></div>
+      <div id="term-line">
+        <span id="term-prompt">reclaimer@home:~$</span>
+        <input id="term-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal input">
+      </div>
+    </section>
+
+    <section id="panel-editor" class="panel">
+      <div id="editor-root" class="editor-root"></div>
+    </section>
+
+    <section id="panel-scripts" class="panel scroll">
+      <div id="scripts-list"></div>
+    </section>
+
+    <section id="panel-network" class="panel scroll">
+      <div id="network-list"></div>
+    </section>
+
+    <section id="panel-lessons" class="panel scroll">
+      <div id="lessons-root"></div>
+    </section>
+
+    <section id="panel-docs" class="panel scroll">
+      <div class="docs">
+        <h2>The <code>net</code> module</h2>
+        <p class="dim">Every script talks to the grid through <code>import net</code>. Calls marked
+        <b>blocking</b> genuinely pause your script until the work is done — that is the game.
+        Each function you use adds to a script's RAM cost (base 1.0GB).</p>
+
+        <div id="coi-warning" class="coi-warning">
+          <b>Script engine offline.</b> This page is not cross-origin isolated, so the Python
+          interpreter can't start. See Troubleshooting below.
+        </div>
+
+        <h3>Working a server <span class="dim">(blocking)</span></h3>
+        <table>
+          <tr><td><code>net.hack(host)</code></td><td>Siphon credits from a rooted server. Returns credits gained; a failed attempt returns 0 and raises the target's security slightly. Needs root and enough skill. <i>+0.15GB</i></td></tr>
+          <tr><td><code>net.grow(host)</code></td><td>Fluff a server's balance back up (security creeps up). Returns the new balance. <i>+0.15GB</i></td></tr>
+          <tr><td><code>net.weaken(host)</code></td><td>Scrub security down toward its floor. Returns the new security level. <i>+0.15GB</i></td></tr>
+          <tr><td><code>net.sleep(seconds)</code></td><td>Do nothing for a while. <i>free</i></td></tr>
+        </table>
+
+        <h3>Reading the grid</h3>
+        <table>
+          <tr><td><code>net.scan(host)</code></td><td>List of hostnames wired to <code>host</code> (discovers them). <i>+0.25GB</i></td></tr>
+          <tr><td><code>net.server(host)</code></td><td>Dict of facts: <code>money, max_money, security, min_security, level_required, ports_required, rooted, ram, ram_used, hostname</code>. <i>+0.05GB</i></td></tr>
+          <tr><td><code>net.servers()</code></td><td>Every hostname you've discovered. <i>+0.3GB</i></td></tr>
+          <tr><td><code>net.money()</code> / <code>net.skill()</code></td><td>Your balance / your skill level. <i>+0.02GB each</i></td></tr>
+          <tr><td><code>net.has_root(host)</code></td><td>True if you have root. <i>+0.05GB</i></td></tr>
+          <tr><td><code>net.hack_time(host)</code> etc.</td><td><code>grow_time</code>, <code>weaken_time</code>: seconds the op would take right now. <i>+0.05GB each</i></td></tr>
+          <tr><td><code>net.hostname()</code> / <code>net.args</code></td><td>Where this script runs / the arguments it was started with (a list of strings). <i>free</i></td></tr>
+        </table>
+
+        <h3>Root &amp; automation</h3>
+        <table>
+          <tr><td><code>net.nuke(host)</code></td><td>Force root, if you own crackers for every lock. Raises <code>net.NetError</code> if you can't. <i>+0.05GB</i></td></tr>
+          <tr><td><code>net.run(script, host, *args)</code></td><td>Launch a script from your rig onto any rooted server (its RAM, your payroll). Returns the pid, or 0 if it couldn't start. <i>+1.0GB</i></td></tr>
+          <tr><td><code>net.ps()</code> / <code>net.kill(pid)</code></td><td>List running scripts / stop one. <i>+0.3GB each</i></td></tr>
+          <tr><td><code>net.log(*parts)</code></td><td>Write to this script's log — same place <code>print()</code> goes. <i>free</i></td></tr>
+        </table>
+
+        <h3>How the numbers move</h3>
+        <ul>
+          <li><b>Security</b> rises when you hack (+0.6) or grow (+0.3), and falls when you weaken (−1.5), never below the server's floor. High security means slower operations and worse hack odds.</li>
+          <li><b>Hacking</b> steals a percentage of the server's <i>current</i> credits — keep the balance high with <code>grow</code> or the takes shrink.</li>
+          <li><b>Skill</b> grows with every completed operation. Higher skill: better odds, bigger cuts, faster work, deeper servers.</li>
+          <li><b>RAM</b> limits how much runs at once. Scripts run anywhere you have root; files stay on your rig.</li>
+        </ul>
+
+        <h3>Errors</h3>
+        <p>Grid refusals raise <code>net.NetError</code> — catch them like any exception:</p>
+        <pre>try:
+    net.nuke("night-owl")
+except net.NetError as e:
+    print(f"not yet: {e}")</pre>
+
+        <h3>Troubleshooting</h3>
+        <ul>
+          <li><b>“Script engine offline / not cross-origin isolated”</b> — the game needs
+          SharedArrayBuffer, which needs COOP/COEP headers. A bundled service worker adds them and
+          reloads once automatically; if it can't (private browsing with service workers blocked,
+          very old browser), scripts can't run. A normal window in a current Chrome, Firefox,
+          Edge, or Safari works.</li>
+          <li><b>Scripts stop when the tab closes</b> — yes: your rig is your browser tab. Siphon
+          drones keep earning while you're away (up to 4 hours).</li>
+          <li><b>Save data</b> lives in this browser's localStorage. <code>reset confirm</code> wipes it.</li>
+        </ul>
+
+        <h3>Colophon</h3>
+        <p class="dim">NETFALL runs real CPython in your browser via
+        <a href="https://pyodide.org" target="_blank" rel="noopener">Pyodide</a> (MPL-2.0) — every
+        script you write is genuine Python, executing in a WebAssembly interpreter, blocking calls
+        and all. Inspired by the mechanics of the excellent
+        <a href="https://github.com/bitburner-official/bitburner-src" target="_blank" rel="noopener">Bitburner</a>;
+        all lore, names, and code here are original. Your save never leaves your machine.</p>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="intro"></div>
+<div id="toasts"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

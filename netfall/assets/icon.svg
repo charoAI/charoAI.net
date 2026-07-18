@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- NETFALL: an N drawn as network wire, with one node falling off the grid. -->
+  <defs>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <radialGradient id="haze" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#0d1a14"/>
+      <stop offset="100%" stop-color="#07090b"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#haze)"/>
+  <rect x="10" y="10" width="492" height="492" rx="88" fill="none" stroke="#1c262e" stroke-width="6"/>
+
+  <g filter="url(#glow)" stroke="#46e08c" stroke-width="22" stroke-linecap="round" fill="none">
+    <!-- left vertical -->
+    <path d="M 152 362 L 152 150"/>
+    <!-- diagonal -->
+    <path d="M 152 150 L 360 362"/>
+    <!-- right vertical, severed partway down -->
+    <path d="M 360 150 L 360 232"/>
+  </g>
+
+  <!-- the falling node's dashed wake -->
+  <path d="M 360 252 L 360 296" stroke="#e0b34a" stroke-width="10" stroke-linecap="round"
+        stroke-dasharray="2 22" fill="none" opacity="0.9"/>
+
+  <g filter="url(#glow)">
+    <!-- grid nodes -->
+    <circle cx="152" cy="150" r="19" fill="#46e08c"/>
+    <circle cx="152" cy="362" r="19" fill="#46e08c"/>
+    <circle cx="360" cy="150" r="19" fill="#46e08c"/>
+    <circle cx="360" cy="362" r="19" fill="#46e08c"/>
+    <!-- the one that fell -->
+    <circle cx="360" cy="316" r="15" fill="#e0b34a"/>
+  </g>
+</svg>
