@@ -34,6 +34,7 @@ index.html            shell + docs + COI service-worker bootstrap
 coi-serviceworker.js  adds COOP/COEP headers on static hosts (GitHub Pages)
 css/netfall.css       the whole look
 js/
+  intro.js            title screen: boot log, canvas backdrop, menu, synth ambience
   servers.js          network definitions + every formula/tuning knob
   state.js            save file, event bus, persistence
   procs.js            process manager: spawns workers, serves the API bridge, applies game rules
@@ -44,8 +45,14 @@ js/
   ui.js               tabs, topbar, network/scripts panels
   main.js             boot wiring
 py/net_api.py         the `net` module injected into every script
+assets/               icon (svg/png/ico) + web app manifest icons
+launch/               desktop launchers for Windows / macOS / Linux (see its README)
 vendor/pyodide/       CPython-in-wasm runtime (Pyodide 0.27.5, MPL-2.0)
 ```
+
+The game is an installable web app (manifest + service worker): Chrome/Edge's
+"Install page as app" gives it a desktop icon and its own window on any OS —
+or use the scripted launchers in `launch/`.
 
 ### The blocking bridge (the interesting part)
 

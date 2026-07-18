@@ -75,8 +75,10 @@ async function main() {
     const consoleErrors = [];
     page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
 
-    // Seed a save containing our test scripts before the game boots.
+    // Seed a save containing our test scripts before the game boots, and skip
+    // the title sequence — it has its own test block below.
     await page.addInitScript(([hack, bad]) => {
+      localStorage.setItem('netfall_skip_intro', '1');
       localStorage.setItem('netfall_save_v1', JSON.stringify({
         version: 1,
         files: { 'e2e_hack.py': hack, 'e2e_bad.py': bad },
@@ -194,6 +196,7 @@ async function main() {
     // ---- service-worker COI path (GitHub Pages simulation) ----------------
     const ctx2 = await browser.newContext();
     const page2 = await ctx2.newPage();
+    await page2.addInitScript(() => localStorage.setItem('netfall_skip_intro', '1'));
     await page2.goto(`http://localhost:${PORT_PLAIN}/netfall/`);
     // The page registers the SW and reloads itself once; give it a moment.
     let isolated = false;
@@ -217,6 +220,37 @@ async function main() {
       check('python runs end-to-end under SW isolation', swLog.includes('SW_OK'), swLog);
     }
     await ctx2.close();
+
+    // ---- title screen / intro flow ----------------------------------------
+    const ctx3 = await browser.newContext();
+    const page3 = await ctx3.newPage();
+    await page3.goto(`http://localhost:${PORT_COI}/netfall/`);
+    await page3.waitForSelector('.intro-boot', { timeout: 5000 });
+    let bootText = await page3.textContent('.intro-boot');
+    check('boot log plays', bootText.includes('RECLAIMER OS'));
+    await page3.keyboard.press('Enter'); // skip boot -> title
+    await page3.waitForSelector('.intro-menu', { timeout: 3000 });
+    let menuText = await page3.textContent('.intro-menu');
+    check('fresh save shows BEGIN OPERATION', menuText.includes('BEGIN OPERATION')
+      && !menuText.includes('CONTINUE'), menuText);
+    await page3.keyboard.press('ArrowDown');
+    const activeItem = await page3.textContent('.intro-item.active');
+    check('menu keyboard navigation', activeItem.includes('FIELD TRAINING'), activeItem);
+    await page3.keyboard.press('ArrowUp');
+    await page3.keyboard.press('Enter'); // BEGIN OPERATION
+    await page3.waitForFunction(() => !document.getElementById('intro').classList.contains('visible'), null, { timeout: 3000 });
+    check('intro closes into the game', true);
+    check('new operatives land on lessons', await page3.evaluate(() =>
+      document.getElementById('panel-lessons').classList.contains('active')));
+    check('intro marked as seen', await page3.evaluate(() => localStorage.getItem('netfall_seen_intro') === '1'));
+    // Reopen from the brand; seen flag means no boot log, straight to menu.
+    await page3.click('.brand');
+    await page3.waitForSelector('.intro-menu', { timeout: 3000 });
+    check('brand click reopens title menu', true);
+    await page3.keyboard.press('Enter');
+    await page3.waitForFunction(() => !document.getElementById('intro').classList.contains('visible'), null, { timeout: 3000 });
+    check('menu closes back into the game', true);
+    await ctx3.close();
   } finally {
     await browser.close();
     for (const s of servers) s.kill();

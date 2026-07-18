@@ -5,11 +5,19 @@ import { procs } from './procs.js';
 import { Terminal } from './terminal.js';
 import { Editor } from './editor.js';
 import { Lessons } from './lessons.js';
+import { Intro } from './intro.js';
 import { UI } from './ui.js';
 import { fmtMoney } from './util.js';
 
 async function boot() {
   const offline = game.load();
+
+  // Title screen goes up immediately; the game finishes booting behind it.
+  const intro = new Intro({
+    onNewGame: () => { procs.killAll(); game.reset(); },
+  });
+  const introDone = intro.show();
+
   await procs.init();
 
   const ui = new UI();
@@ -18,6 +26,9 @@ async function boot() {
     toast: (msg, cls) => ui.toast(msg, cls),
     openEditor: (file) => { ui.showTab('editor'); editor.open(file); },
     showTab: (name) => ui.showTab(name),
+    openMenu: () => {
+      intro.show({ returning: true }).then((action) => handleMenu(action));
+    },
     runFile: (file) => {
       const r = procs.spawn(file, 'home', []);
       if (r.ok) ui.toast(`${file} running (pid ${r.pid})`, 'good');
@@ -39,6 +50,18 @@ async function boot() {
     if (window.getSelection()?.toString()) return; // don't steal a text selection
     terminal.focus();
   });
+
+  function handleMenu(action) {
+    if (action === 'lessons') ui.showTab('lessons');
+    else if (action === 'docs') ui.showTab('docs');
+    else if (action === 'new') {
+      terminal.host = 'home';
+      terminal.updatePrompt();
+      ui.showTab('lessons'); // fresh operatives start with training in view
+    } else terminal.focus();
+  }
+  introDone.then(handleMenu);
+  document.querySelector('.brand').addEventListener('click', () => ctx.openMenu());
 
   // Drone income + autosave ticks.
   setInterval(() => {
