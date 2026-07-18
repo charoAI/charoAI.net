@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- CYBERSPYKE: a signal spike tearing through the dead grid's baseline. -->
+  <defs>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <radialGradient id="haze" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#0d1a14"/>
+      <stop offset="100%" stop-color="#07090b"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#haze)"/>
+  <rect x="10" y="10" width="492" height="492" rx="88" fill="none" stroke="#1c262e" stroke-width="6"/>
+
+  <g filter="url(#glow)" stroke="#46e08c" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 92 310 L 190 310 L 240 128 L 288 392 L 330 310 L 420 310"/>
+  </g>
+
+  <g filter="url(#glow)">
+    <circle cx="92" cy="310" r="19" fill="#46e08c"/>
+    <circle cx="420" cy="310" r="19" fill="#46e08c"/>
+    <circle cx="240" cy="128" r="16" fill="#e0b34a"/>
+  </g>
+</svg>
