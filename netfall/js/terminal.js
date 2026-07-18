@@ -433,6 +433,7 @@ const COMMANDS = {
 
   lessons: { usage: 'lessons', desc: 'open the lessons tab', fn(t) { t.ctx.showTab('lessons'); } },
   docs: { usage: 'docs', desc: 'open the net API reference', fn(t) { t.ctx.showTab('docs'); } },
+  menu: { usage: 'menu', desc: 'return to the title screen', fn(t) { t.ctx.openMenu(); } },
   clear: { usage: 'clear', desc: 'wipe the terminal', fn(t) { t.out.innerHTML = ''; } },
   save: { usage: 'save', desc: 'save now (also autosaves)', fn(t) { game.save(); t.println('saved.', 'good'); } },
 
