@@ -9,10 +9,14 @@ export const LESSONS = [
   {
     id: 'wake',
     title: '0 · Wake Up',
-    concepts: 'the terminal',
+    concepts: 'the shell',
     body: `Twelve years since the Fall, and your rig finally boots. Time to work.
-Everything in CYBERSPYKE happens through two tools: the <b>Terminal</b> and the <b>Editor</b>.
-Try this in the terminal, one line at a time:
+Your <b>Workspace</b> has two halves: the <b>Editor</b> (left), where you'll write Python, and
+the <b>Terminal</b> (right). This first lesson is all Terminal.
+<p>A quick but important thing: the terminal is a <b>shell</b>, not Python. It's a handful of
+commands for getting around the grid — the same way the command line on any real computer isn't
+Python; you use it to move around and launch programs. Your actual Python starts next lesson.</p>
+Type these at the <code>reclaimer@…$</code> prompt, one line at a time:
 <pre>scan
 connect dustbox
 analyze
@@ -20,7 +24,8 @@ nuke
 home</pre>
 <code>scan</code> shows what a server is wired to. <code>connect</code> hops to it. <code>nuke</code> shears
 its locks and gives you <b>root</b> — permission to run code against it. The dustbox has
-no locks at all; nobody guarded a parking kiosk even before the world ended.`,
+no locks at all; nobody guarded a parking kiosk even before the world ended. (<code>help</code>
+lists every shell command.)`,
     check: () => game.server('dustbox')?.rooted,
     done: 'You rooted the dustbox. It will bill ghost-cars for you now.',
   },
@@ -35,8 +40,9 @@ print("hello, grid")
 print("this rig has seen better decades")
 `,
     },
-    body: `Scripts are Python files that live on your rig. Load the starter file, look at it
-in the <b>Editor</b>, then run it from the terminal:
+    body: `Now the real thing: Python. Scripts are Python files that live on your rig. Load the
+starter below — it opens in the <b>Editor</b> on your left — then run it from the <b>Terminal</b>
+on your right (they're side by side, so you never lose sight of your code):
 <pre>run hello.py</pre>
 Every script costs <b>RAM</b> while it runs. Simple scripts are cheap; every grid function
 you call adds to the bill. Watch a script's output with <code>tail &lt;pid&gt;</code> or in the
