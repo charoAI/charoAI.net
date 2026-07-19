@@ -7,7 +7,7 @@ import { fmtMoney, fmtRam, escapeHtml } from './util.js';
 
 export class UI {
   constructor() {
-    this.tabs = document.querySelectorAll('.nav-tab');
+    this.tabs = document.querySelectorAll('.nav-tab[data-tab]'); // real tabs only; toggles handled elsewhere
     this.panels = document.querySelectorAll('.panel');
     this.toastBox = document.getElementById('toasts');
     this.onShowTab = null;

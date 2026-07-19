@@ -47,13 +47,21 @@
     <button class="nav-tab active" data-tab="workspace">Workspace</button>
     <button class="nav-tab" data-tab="scripts">Scripts</button>
     <button class="nav-tab" data-tab="network">Network</button>
-    <button class="nav-tab" data-tab="lessons">Lessons</button>
+    <button class="nav-tab nav-toggle" id="nav-lessons">Lessons</button>
     <button class="nav-tab" data-tab="docs">Docs</button>
   </nav>
 
   <main id="main">
     <section id="panel-workspace" class="panel active">
       <div id="workspace">
+        <aside class="ws-pane ws-lesson" id="ws-lesson" hidden>
+          <div class="ws-lesson-head">
+            <span>Field Training</span>
+            <button id="ws-lesson-close" title="hide lessons" aria-label="hide lessons">×</button>
+          </div>
+          <div id="lessons-root"></div>
+        </aside>
+        <div class="ws-divider" id="ws-divider-lesson" title="drag to resize" aria-hidden="true" hidden></div>
         <div class="ws-pane ws-editor">
           <div id="editor-root" class="editor-root"></div>
         </div>
@@ -74,10 +82,6 @@
 
     <section id="panel-network" class="panel scroll">
       <div id="network-list"></div>
-    </section>
-
-    <section id="panel-lessons" class="panel scroll">
-      <div id="lessons-root"></div>
     </section>
 
     <section id="panel-docs" class="panel scroll">
