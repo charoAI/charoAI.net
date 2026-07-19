@@ -122,6 +122,12 @@ async function boot() {
     if (income > 0) game.addMoney(income);
   }, 1000);
   setInterval(() => game.save(), 10_000);
+
+  // Coding contracts surface on the grid over time.
+  setInterval(() => {
+    const host = game.spawnContract();
+    if (host) ui.toast(`a coding contract surfaced on ${host} — type \`contracts\``, 'good');
+  }, 75_000);
   window.addEventListener('beforeunload', () => game.save());
   document.addEventListener('visibilitychange', () => { if (document.hidden) game.save(); });
 

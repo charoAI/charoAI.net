@@ -8,6 +8,7 @@ import {
   DRONE_MAX, scriptRamCost,
 } from './servers.js';
 import { fmtMoney, fmtRam, fmtTime, escapeHtml } from './util.js';
+import { contractTitle, describeContract } from './contracts.js';
 
 const BANNER = [
   ' ::  C Y B E R S P Y K E  ::',
@@ -190,6 +191,53 @@ const COMMANDS = {
       if (!r.ok) return t.println(r.error, 'err');
       t.println(`${t.host}: locks sheared. You have root.`, 'good');
       if (t.host === 'EIDOLON') t.println('…something old just noticed you.', 'warn');
+    },
+  },
+
+  contracts: {
+    usage: 'contracts',
+    desc: 'list coding contracts on the grid',
+    fn(t) {
+      const hosts = game.contractHosts();
+      if (!hosts.length) return t.println('no contracts in reach. scan deeper — they surface over time.', 'dim');
+      t.println('CODING CONTRACTS — Python puzzles that pay. `contract <host>` to read one.', 'head');
+      for (const h of hosts) {
+        const c = game.contractAt(h);
+        t.println(`  ${h.padEnd(14)} ${contractTitle(c).padEnd(16)} ${fmtMoney(c.reward).padEnd(9)} ${c.tries} tries`);
+      }
+    },
+  },
+
+  contract: {
+    usage: 'contract [host]',
+    desc: 'read the contract on a server',
+    fn(t, args) {
+      const host = args[0] || t.host;
+      if (!SERVER_DEFS[host] || !game.server(host)?.discovered) return t.println(`unknown host: ${host}`, 'err');
+      const c = game.contractAt(host);
+      if (!c) return t.println(`no contract on ${host}. \`contracts\` lists them.`, 'err');
+      t.println(`${contractTitle(c)} @ ${host} — ${fmtMoney(c.reward)}, ${c.tries} tries left`, 'head');
+      for (const line of describeContract(c).split('\n')) t.println(line);
+      t.println('');
+      t.println(`answer here with \`solve <answer>\` (connect first), or from a script: net.solve("${host}", answer)`, 'dim');
+    },
+  },
+
+  solve: {
+    usage: 'solve <answer>',
+    desc: 'answer the connected server\'s contract',
+    fn(t, args) {
+      const c = game.contractAt(t.host);
+      if (!c) return t.println(`no contract on ${t.host}. \`contracts\` to find one, then \`connect <host>\`.`, 'err');
+      if (!args.length) return t.println('solve what? e.g. `solve 42`, `solve [3, 8]`, `solve some words`', 'err');
+      const raw = args.join(' ');
+      let answer;
+      try { answer = JSON.parse(raw); } catch { answer = raw; } // bare text stays a string
+      const r = game.solveContract(t.host, answer);
+      if (!r.ok) return t.println(r.error, 'err');
+      if (r.correct) t.println(`ACCEPTED. +${fmtMoney(r.reward)} credits.`, 'good');
+      else if (r.failed) t.println('WRONG — and that was the last try. The contract self-wiped.', 'err');
+      else t.println(`wrong answer. ${r.tries} tries left.`, 'warn');
     },
   },
 

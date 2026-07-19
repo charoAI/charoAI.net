@@ -247,8 +247,64 @@ their RAM, your payroll. You'll need <code>harvest2.py</code> from lesson 5 on y
     done: 'Self-spreading infrastructure. The old net works for you now.',
   },
   {
+    id: 'contracts',
+    title: '8 · Coding Contracts',
+    concepts: 'dict dispatch · problem solving',
+    starter: {
+      name: 'solver.py',
+      code: `# A contract solver. Reads a server's contract, computes the answer,
+# and submits it. Grow the 'solvers' table as you meet new puzzle types.
+import net
+
+def count_vowels(data):
+    return sum(1 for ch in data["text"] if ch in "aeiou")
+
+def sum_pair(data):
+    nums, target = data["numbers"], data["target"]
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [nums[i], nums[j]]
+
+# Map a contract 'type' to the function that solves it.
+solvers = {
+    "count-vowels": count_vowels,
+    "sum-pair": sum_pair,
+    # your turn: "reverse-words", "divisible-count", "word-frequency", ...
+}
+
+host = net.args[0] if net.args else "dustbox"
+c = net.contract(host)
+if c is None:
+    print(f"no contract on {host} — run the 'contracts' command to find one.")
+else:
+    print(f'{c["title"]}  ({c["type"]})')
+    solver = solvers.get(c["type"])
+    if solver is None:
+        print(f'no solver for "{c["type"]}" yet. read it: contract {host}')
+    else:
+        result = net.solve(host, solver(c["data"]))
+        if result["correct"]:
+            print(f'SOLVED  +{result["reward"]} credits')
+        else:
+            print(f'wrong — {result["tries_left"]} tries left')
+`,
+    },
+    body: `<b>Contracts</b> are Python puzzles that surface on servers and pay credits. Run the
+<code>contracts</code> command to find them, <code>contract &lt;host&gt;</code> to read one. Easy ones you
+can answer straight from the terminal (<code>solve 42</code>, <code>solve [3, 8]</code>) — but the point
+is to <i>solve them with code</i>. <code>net.contract(host)</code> hands you the puzzle as a dict;
+compute the answer and pass it to <code>net.solve(host, answer)</code>.
+<p>The starter uses a <b>dict of functions</b> — a clean way to pick the right solver for each
+puzzle <code>type</code> without a wall of <code>if</code>/<code>elif</code>. Run it against a server that has a
+contract (<code>run solver.py dustbox</code>), then extend the table: read a new type's description
+and write the function that cracks it. That's the whole game of programming, in miniature.</p>`,
+    check: () => game.s.stats.contractsSolved >= 1,
+    done: 'You taught the grid to solve its own riddles. Add a type whenever a new one stumps you.',
+  },
+  {
     id: 'empire',
-    title: '8 · The Long Game',
+    title: '9 · The Long Game',
     concepts: 'strategy · the deep grid',
     body: `No starter file this time — you have all the tools. What's left is scale:
 <ul>

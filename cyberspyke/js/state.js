@@ -3,6 +3,9 @@
 import {
   SERVER_DEFS, HOSTNAMES, HOME_RAM_BASE, levelFromXp, droneIncome,
 } from './servers.js';
+import { makeContract, pickTypeForLevel, verifyContract, contractTier } from './contracts.js';
+
+const CONTRACT_CAP = 6;
 
 const SAVE_KEY = 'cyberspyke_save_v1';
 const LEGACY_SAVE_KEY = 'netfall_save_v1'; // pre-rename saves migrate silently
@@ -43,11 +46,15 @@ function freshState() {
     drones: [],             // [{level}]
     servers,
     files: { 'welcome.py': WELCOME_FILE },
+    contracts: {                 // host -> {type, host, data, reward, tries}
+      dustbox: makeContract(pickTypeForLevel(SERVER_DEFS.dustbox.reqLevel), 'dustbox', SERVER_DEFS.dustbox.reqLevel),
+      vendnet: makeContract(pickTypeForLevel(SERVER_DEFS.vendnet.reqLevel), 'vendnet', SERVER_DEFS.vendnet.reqLevel),
+    },
     stats: {
       hacksSucceeded: 0, hacksFailed: 0, grows: 0, weakens: 0,
       moneyEarned: 0, scriptsCompleted: 0, scriptsWithArgs: 0,
       remoteRuns: 0, apiScans: 0, apiMoneyChecks: 0, nukes: 0,
-      totalOps: 0,
+      totalOps: 0, contractsSolved: 0, contractsFailed: 0,
     },
     lessonsDone: {},
     eidolonRooted: false,
@@ -86,6 +93,7 @@ class GameState {
           this.s = { ...fresh, ...saved };
           this.s.stats = { ...fresh.stats, ...(saved.stats ?? {}) };
           this.s.files = { ...fresh.files, ...(saved.files ?? {}) };
+          this.s.contracts = saved.contracts ?? {}; // existing saves start with none; the timer refills
           this.s.servers = { ...fresh.servers };
           for (const host of HOSTNAMES) {
             if (saved.servers?.[host]) this.s.servers[host] = { ...fresh.servers[host], ...saved.servers[host] };
@@ -186,6 +194,48 @@ class GameState {
     }
     this.emit('milestone');
     return { ok: true };
+  }
+
+  // -- contracts ------------------------------------------------------------
+  contractAt(host) { return this.s.contracts[host] ?? null; }
+
+  contractHosts() {
+    return HOSTNAMES.filter(h => this.s.contracts[h] && this.s.servers[h]?.discovered);
+  }
+
+  // Add a contract to a random eligible server. Returns the host, or null.
+  spawnContract() {
+    if (Object.keys(this.s.contracts).length >= CONTRACT_CAP) return null;
+    const pool = HOSTNAMES.filter(h =>
+      this.s.servers[h].discovered && SERVER_DEFS[h].maxMoney > 0 && !this.s.contracts[h]);
+    if (!pool.length) return null;
+    const host = pool[Math.floor(Math.random() * pool.length)];
+    const req = SERVER_DEFS[host].reqLevel;
+    this.s.contracts[host] = makeContract(pickTypeForLevel(req), host, req);
+    this.emit('contracts');
+    this.emit('milestone');
+    return host;
+  }
+
+  // Returns {ok, correct, reward?, tries?, failed?} or {ok:false, error}.
+  solveContract(host, answer) {
+    const c = this.s.contracts[host];
+    if (!c) return { ok: false, error: `no contract on ${host}` };
+    if (verifyContract(c, answer)) {
+      delete this.s.contracts[host];
+      this.addMoney(c.reward);
+      this.addXp(12 * contractTier(c));
+      this.s.stats.contractsSolved += 1;
+      this.emit('contracts');
+      this.emit('milestone');
+      return { ok: true, correct: true, reward: c.reward };
+    }
+    c.tries -= 1;
+    const failed = c.tries <= 0;
+    if (failed) { delete this.s.contracts[host]; this.s.stats.contractsFailed += 1; }
+    this.emit('contracts');
+    this.emit('milestone');
+    return { ok: true, correct: false, tries: Math.max(0, c.tries), failed };
   }
 
   // -- drones ---------------------------------------------------------------

@@ -138,6 +138,28 @@
           <tr><td><code>net.log(*parts)</code></td><td>Write to this script's log — same place <code>print()</code> goes. <i>free</i></td></tr>
         </table>
 
+        <h3>Coding contracts</h3>
+        <p>Contracts are self-contained Python puzzles that surface on servers and pay credits —
+        string, list, dict, and algorithm problems that get harder on deeper servers. Find them
+        with the <code>contracts</code> command, read one with <code>contract &lt;host&gt;</code>, and
+        answer it — either by typing <code>solve &lt;answer&gt;</code> in the terminal, or (the real
+        point) by writing a script that computes the answer and submits it:</p>
+        <pre>import net
+
+host = "dustbox"                 # a server with a contract (see `contracts`)
+c = net.contract(host)
+print(c["title"], "-", c["description"])
+
+data = c["data"]                 # the puzzle input
+answer = ...                     # compute it in Python
+result = net.solve(host, answer)
+print("correct!" if result["correct"] else f'{result["tries_left"]} tries left')</pre>
+        <table>
+          <tr><td><code>net.contracts()</code></td><td>List of hostnames that currently hold a contract. <i>+0.3GB</i></td></tr>
+          <tr><td><code>net.contract(host)</code></td><td>Dict <code>{type, title, description, data, tries, reward}</code>, or <code>None</code>. <i>+0.2GB</i></td></tr>
+          <tr><td><code>net.solve(host, answer)</code></td><td>Submit an answer. Returns <code>{correct, reward, tries_left, failed}</code>. Wrong answers cost a try; run out and the contract self-wipes. <i>+0.4GB</i></td></tr>
+        </table>
+
         <h3>How the numbers move</h3>
         <ul>
           <li><b>Security</b> rises when you hack (+0.6) or grow (+0.3), and falls when you weaken (−1.5), never below the server's floor. High security means slower operations and worse hack odds.</li>
