@@ -44,8 +44,7 @@
   </header>
 
   <nav id="nav">
-    <button class="nav-tab active" data-tab="terminal">Terminal</button>
-    <button class="nav-tab" data-tab="editor">Editor</button>
+    <button class="nav-tab active" data-tab="workspace">Workspace</button>
     <button class="nav-tab" data-tab="scripts">Scripts</button>
     <button class="nav-tab" data-tab="network">Network</button>
     <button class="nav-tab" data-tab="lessons">Lessons</button>
@@ -53,16 +52,20 @@
   </nav>
 
   <main id="main">
-    <section id="panel-terminal" class="panel active">
-      <div id="term-out"></div>
-      <div id="term-line">
-        <span id="term-prompt">reclaimer@home:~$</span>
-        <input id="term-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal input">
+    <section id="panel-workspace" class="panel active">
+      <div id="workspace">
+        <div class="ws-pane ws-editor">
+          <div id="editor-root" class="editor-root"></div>
+        </div>
+        <div class="ws-divider" id="ws-divider" title="drag to resize" aria-hidden="true"></div>
+        <div class="ws-pane ws-terminal" id="ws-terminal">
+          <div id="term-out"></div>
+          <div id="term-line">
+            <span id="term-prompt">reclaimer@home:~$</span>
+            <input id="term-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal input">
+          </div>
+        </div>
       </div>
-    </section>
-
-    <section id="panel-editor" class="panel">
-      <div id="editor-root" class="editor-root"></div>
     </section>
 
     <section id="panel-scripts" class="panel scroll">
@@ -88,6 +91,21 @@
           <b>Script engine offline.</b> This page is not cross-origin isolated, so the Python
           interpreter can't start. See Troubleshooting below.
         </div>
+
+        <h3>Terminal vs. Python — what's what</h3>
+        <p>Two things live in the Workspace, and they are <b>not</b> the same language:</p>
+        <ul>
+          <li>The <b>Terminal</b> (right side) is a <b>shell</b> — a small set of commands like
+          <code>scan</code>, <code>connect</code>, <code>nuke</code>, <code>run</code>, <code>ls</code>
+          for getting around the grid and launching scripts. These are <i>not</i> Python, exactly like
+          the terminal on a real dev machine isn't Python: you use a shell to move around and start
+          programs. Type <code>help</code> to see them all.</li>
+          <li>The <b>Editor</b> (left side) is where you write <b>real Python</b>. Every script you
+          write and <code>run</code> is executed by a genuine CPython interpreter — loops, functions,
+          the <code>net</code> module below, all of it. That's the part that's teaching you to code.</li>
+        </ul>
+        <p class="dim">Rule of thumb: if you typed it at the <code>reclaimer@…$</code> prompt, it's a
+        shell command. If it lives in a <code>.py</code> file, it's Python.</p>
 
         <h3>Working a server <span class="dim">(blocking)</span></h3>
         <table>
