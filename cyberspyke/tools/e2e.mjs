@@ -177,8 +177,14 @@ async function main() {
     // UI panels.
     await page.click('[data-tab="network"]');
     check('network panel renders cards', (await page.locator('.srv-card').count()) >= 3);
-    await page.click('[data-tab="lessons"]');
-    check('lessons render', (await page.locator('.lesson').count()) === 9);
+    await page.click('#nav-lessons'); // toggle the lesson pane open
+    check('lesson pane opens beside the terminal (all three visible)',
+      (await page.locator('#ws-lesson').isVisible())
+      && (await page.locator('#panel-workspace #editor-root').isVisible())
+      && (await page.locator('#panel-workspace #term-in').isVisible()));
+    check('lessons render', (await page.locator('#ws-lesson .lesson').count()) === 9);
+    await page.click('#nav-lessons'); // toggle closed again
+    check('lesson pane toggles closed', await page.evaluate(() => document.getElementById('ws-lesson').hidden));
     const lesson0Done = await page.evaluate(() => window.__cyberspyke.game.s.lessonsDone['wake'] === true);
     check('lesson 0 auto-completed (dustbox rooted)', lesson0Done);
     await page.click('[data-tab="workspace"]');
@@ -244,9 +250,9 @@ async function main() {
     await page3.keyboard.press('Enter'); // BEGIN OPERATION
     await page3.waitForFunction(() => !document.getElementById('intro').classList.contains('visible'), null, { timeout: 3000 });
     check('intro closes into the game', true);
-    check('BEGIN OPERATION lands on the workspace (not lessons)', await page3.evaluate(() =>
+    check('BEGIN OPERATION lands on the workspace with lessons closed', await page3.evaluate(() =>
       document.getElementById('panel-workspace').classList.contains('active')
-      && !document.getElementById('panel-lessons').classList.contains('active')));
+      && document.getElementById('ws-lesson').hidden));
     check('intro marked as seen', await page3.evaluate(() => localStorage.getItem('cyberspyke_seen_intro') === '1'));
     // Reopen from the brand; seen flag means no boot log, straight to menu.
     await page3.click('.brand');
@@ -256,8 +262,9 @@ async function main() {
     await page3.keyboard.press('ArrowDown'); // BEGIN -> FIELD TRAINING
     await page3.keyboard.press('Enter');
     await page3.waitForFunction(() => !document.getElementById('intro').classList.contains('visible'), null, { timeout: 3000 });
-    check('FIELD TRAINING lands on lessons (distinct from BEGIN)', await page3.evaluate(() =>
-      document.getElementById('panel-lessons').classList.contains('active')));
+    check('FIELD TRAINING opens the lesson pane (distinct from BEGIN)', await page3.evaluate(() =>
+      document.getElementById('panel-workspace').classList.contains('active')
+      && !document.getElementById('ws-lesson').hidden));
     await ctx3.close();
   } finally {
     await browser.close();
