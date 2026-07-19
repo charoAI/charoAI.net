@@ -22,10 +22,21 @@ async function boot() {
 
   const ui = new UI();
 
+  // -- lesson pane: docked beside the editor + terminal, toggled on demand --
+  const lessonPane = document.getElementById('ws-lesson');
+  const lessonDivider = document.getElementById('ws-divider-lesson');
+  const navLessons = document.getElementById('nav-lessons');
+  function setLesson(open) {
+    lessonPane.hidden = !open;
+    lessonDivider.hidden = !open;
+    navLessons.classList.toggle('open', open);
+  }
+  function openLesson() { ui.showTab('workspace'); setLesson(true); }
+
   const ctx = {
     toast: (msg, cls) => ui.toast(msg, cls),
     openEditor: (file) => { ui.showTab('workspace'); editor.open(file); },
-    showTab: (name) => ui.showTab(name),
+    showTab: (name) => { if (name === 'lessons') openLesson(); else ui.showTab(name); },
     openMenu: () => {
       intro.show({ returning: true }).then((action) => handleMenu(action));
     },
@@ -50,26 +61,35 @@ async function boot() {
     if (window.getSelection()?.toString()) return; // don't steal a text selection
     terminal.focus();
   });
-  setupSplit();
+  navLessons.addEventListener('click', () => {
+    const open = lessonPane.hidden; // toggle
+    ui.showTab('workspace');
+    setLesson(open);
+  });
+  document.getElementById('ws-lesson-close').addEventListener('click', () => setLesson(false));
+  makeDivider('ws-divider', '.ws-editor', 220, 260);        // editor | terminal
+  makeDivider('ws-divider-lesson', '.ws-lesson', 240, 560); // lesson | (editor+terminal)
 
   function handleMenu(action) {
-    if (action === 'lessons') ui.showTab('lessons');
-    else if (action === 'docs') ui.showTab('docs');
+    if (action === 'lessons') openLesson();
+    else if (action === 'docs') { setLesson(false); ui.showTab('docs'); }
     else if (action === 'new') {
       terminal.host = 'home';
       terminal.updatePrompt();
-      ui.showTab('workspace'); // Begin Operation drops you at the keyboard
+      setLesson(false);           // Begin Operation: just play
+      ui.showTab('workspace');
       terminal.focus();
     } else { ui.showTab('workspace'); terminal.focus(); }
   }
   introDone.then(handleMenu);
   document.querySelector('.brand').addEventListener('click', () => ctx.openMenu());
 
-  // Drag the divider between editor and terminal to resize (desktop only).
-  function setupSplit() {
+  // Draggable pane divider: sets the pane's width from the pointer, clamped so
+  // neither the pane nor what's to its right collapses. Desktop only.
+  function makeDivider(dividerId, paneSelector, minPx, keepRightPx) {
     const ws = document.getElementById('workspace');
-    const divider = document.getElementById('ws-divider');
-    const editorPane = ws.querySelector('.ws-editor');
+    const divider = document.getElementById(dividerId);
+    const pane = ws.querySelector(paneSelector);
     let dragging = false;
     divider.addEventListener('pointerdown', (e) => {
       if (window.matchMedia('(max-width: 720px)').matches) return;
@@ -80,9 +100,10 @@ async function boot() {
     });
     divider.addEventListener('pointermove', (e) => {
       if (!dragging) return;
-      const rect = ws.getBoundingClientRect();
-      const pct = Math.max(25, Math.min(75, ((e.clientX - rect.left) / rect.width) * 100));
-      editorPane.style.flex = `0 0 ${pct}%`;
+      const paneLeft = pane.getBoundingClientRect().left;
+      const wsRight = ws.getBoundingClientRect().right;
+      const width = Math.max(minPx, Math.min(wsRight - paneLeft - keepRightPx, e.clientX - paneLeft));
+      pane.style.flex = `0 0 ${width}px`;
     });
     const end = (e) => {
       if (!dragging) return;
