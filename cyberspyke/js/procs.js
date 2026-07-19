@@ -8,6 +8,7 @@ import {
   SERVER_DEFS, MAX_PROCS, scriptRamCost,
   hackTime, growTime, weakenTime, applyHack, applyGrow, applyWeaken,
 } from './servers.js';
+import { contractTitle, describeContract } from './contracts.js';
 
 const SAB_SIZE = 64 * 1024;
 const LOG_CAP = 200;
@@ -294,6 +295,27 @@ class ProcManager {
         if (t.error) return fail(t.error);
         const f = { hack_time: hackTime, grow_time: growTime, weaken_time: weakenTime }[fn];
         return ok(Math.round(f(t.srv, t.def, game.level()) * 100) / 100);
+      }
+
+      case 'contracts': return ok(game.contractHosts());
+
+      case 'contract': {
+        const t = this.target(args[0]);
+        if (t.error) return fail(t.error);
+        const c = game.contractAt(args[0]);
+        if (!c) return ok(null);
+        return ok({
+          host: args[0], type: c.type, title: contractTitle(c),
+          description: describeContract(c), data: c.data, tries: c.tries, reward: c.reward,
+        });
+      }
+
+      case 'solve': {
+        const t = this.target(args[0]);
+        if (t.error) return fail(t.error);
+        const r = game.solveContract(args[0], args[1]);
+        if (!r.ok) return fail(r.error);
+        return ok({ correct: r.correct, reward: r.reward ?? 0, tries_left: r.tries ?? 0, failed: !!r.failed });
       }
 
       default: return fail(`unknown grid call: ${fn}`);

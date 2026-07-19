@@ -104,9 +104,21 @@ def _make_module(host, argv):
         """Write to this script's log (same place print() goes)."""
         _bridge.log(" ".join(str(p) for p in parts))
 
+    def contracts():
+        """List servers that currently hold a coding contract. Returns hostnames."""
+        return _call("contracts")
+
+    def contract(target):
+        """Read a server's contract: dict {type, title, description, data, tries, reward}, or None."""
+        return _call("contract", target)
+
+    def solve(target, answer):
+        """Submit an answer to a server's contract. Returns {correct, reward, tries_left, failed}."""
+        return _call("solve", target, answer)
+
     for fn in (hostname, hack, grow, weaken, nuke, scan, server, servers, money,
                skill, sleep, run, ps, kill, has_root, hack_time, grow_time,
-               weaken_time, log):
+               weaken_time, log, contracts, contract, solve):
         setattr(net, fn.__name__, fn)
 
     sys.modules["net"] = net

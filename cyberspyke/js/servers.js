@@ -193,6 +193,7 @@ export const API_RAM = {
   money: 0.02, skill: 0.02, sleep: 0, log: 0, hostname: 0,
   run: 1.0, ps: 0.3, kill: 0.3, has_root: 0.05,
   hack_time: 0.05, grow_time: 0.05, weaken_time: 0.05,
+  contracts: 0.3, contract: 0.2, solve: 0.4,
 };
 export const SCRIPT_RAM_BASE = 1.0;
 

@@ -174,6 +174,85 @@ async function main() {
     check('RAM limit enforced', spawnCheck.first.ok === true && spawnCheck.second.ok === false
       && spawnCheck.second.error.includes('RAM'), JSON.stringify(spawnCheck));
 
+    // Coding contracts: terminal solve, script-API solve, and tries/self-wipe.
+    await page.evaluate(() => {
+      window.__cyberspyke.game.s.contracts['dustbox'] =
+        { type: 'count-vowels', host: 'dustbox', data: { text: 'ghost relay' }, reward: 12345, tries: 5 };
+    });
+    const moneyBeforeC = await page.evaluate(() => window.__cyberspyke.game.s.money);
+    await typeCommand(page, 'connect dustbox');
+    await typeCommand(page, 'solve 3'); // "ghost relay" has 3 vowels
+    out = await page.textContent('#term-out');
+    check('contract solved via terminal', out.includes('ACCEPTED'));
+    check('contract reward paid + cleared', await page.evaluate(() =>
+      window.__cyberspyke.game.s.money >= 12345 && !window.__cyberspyke.game.s.contracts['dustbox']),
+      `money now ${await page.evaluate(() => window.__cyberspyke.game.s.money)}, was ${moneyBeforeC}`);
+
+    // Solve one through the Python API from a script.
+    await page.evaluate(() => {
+      window.__cyberspyke.game.s.contracts['vendnet'] =
+        { type: 'sum-pair', host: 'vendnet', data: { numbers: [2, 5, 9, 14], target: 11 }, reward: 9999, tries: 5 };
+      window.__cyberspyke.game.writeFile('e2e_solver.py',
+        'import net\n' +
+        'c = net.contract("vendnet")\n' +
+        'd = c["data"]\n' +
+        'ans = None\n' +
+        'for i in range(len(d["numbers"])):\n' +
+        '    for j in range(i + 1, len(d["numbers"])):\n' +
+        '        if d["numbers"][i] + d["numbers"][j] == d["target"]:\n' +
+        '            ans = [d["numbers"][i], d["numbers"][j]]\n' +
+        'r = net.solve("vendnet", ans)\n' +
+        'print("CONTRACT_" + ("OK" if r["correct"] else "NO"))\n');
+    });
+    await typeCommand(page, 'home');
+    await typeCommand(page, 'run e2e_solver.py');
+    await waitFor(page, () => window.__cyberspyke.procs.history.some(p => p.script === 'e2e_solver.py'),
+      60_000, 'contract solver finishes');
+    const solverLog = await page.evaluate(() =>
+      window.__cyberspyke.procs.history.find(p => p.script === 'e2e_solver.py').log.map(l => l.text).join('\n'));
+    check('contract solved via net.solve() from a script', solverLog.includes('CONTRACT_OK'), solverLog);
+    check('script-solved contract cleared', await page.evaluate(() => !window.__cyberspyke.game.s.contracts['vendnet']));
+
+    const triesTest = await page.evaluate(() => {
+      const g = window.__cyberspyke.game;
+      g.s.contracts['koipond'] = { type: 'count-vowels', host: 'koipond', data: { text: 'grid' }, reward: 1, tries: 2 };
+      const r1 = g.solveContract('koipond', 999);
+      const stillThere = !!g.s.contracts['koipond'];
+      const r2 = g.solveContract('koipond', 999);
+      const gone = !g.s.contracts['koipond'];
+      return { r1, stillThere, r2, gone };
+    });
+    check('wrong answer costs a try (contract stays)',
+      triesTest.r1.correct === false && triesTest.r1.tries === 1 && triesTest.stillThere);
+    check('contract self-wipes on the last wrong try', triesTest.r2.failed === true && triesTest.gone);
+
+    // Every contract type generates a solvable instance (generator/verifier agree).
+    const genCheck = await page.evaluate(async () => {
+      const mod = await import('./js/contracts.js');
+      const results = {};
+      for (const id of Object.keys(mod.CONTRACT_TYPES)) {
+        const t = mod.CONTRACT_TYPES[id];
+        let allSolvable = true;
+        for (let k = 0; k < 40; k++) {
+          const data = t.generate();
+          // brute-force a correct answer per type to confirm one exists and verify() accepts it
+          let ans;
+          if (id === 'sum-pair') { const n = data.numbers; for (let i = 0; i < n.length; i++) for (let j = i + 1; j < n.length; j++) if (n[i] + n[j] === data.target) ans = [n[i], n[j]]; }
+          else if (id === 'count-vowels') ans = (data.text.match(/[aeiou]/gi) || []).length;
+          else if (id === 'reverse-words') ans = data.sentence.split(' ').reverse().join(' ');
+          else if (id === 'divisible-count') { ans = 0; for (let x = data.lo; x <= data.hi; x++) if (x % data.k === 0) ans++; }
+          else if (id === 'word-frequency') { const c = {}; for (const w of data.text.split(' ')) c[w] = (c[w] || 0) + 1; let b = null, bc = -1; for (const w in c) if (c[w] > bc) { bc = c[w]; b = w; } ans = b; }
+          else if (id === 'caesar-decrypt') ans = data.cipher.replace(/[a-z]/g, ch => String.fromCharCode((ch.charCodeAt(0) - 97 + (26 - (data.shift % 26)) % 26) % 26 + 97));
+          else if (id === 'balanced-brackets') { const st = []; const op = { '(': ')', '[': ']', '{': '}' }; let ok = true; for (const ch of data.s) { if (ch in op) st.push(op[ch]); else if (st.pop() !== ch) ok = false; } ans = ok && st.length === 0; }
+          else if (id === 'max-subarray') { let best = -Infinity, cur = 0; for (const x of data.numbers) { cur = Math.max(x, cur + x); best = Math.max(best, cur); } ans = best; }
+          if (!t.verify(data, ans)) { allSolvable = false; break; }
+        }
+        results[id] = allSolvable;
+      }
+      return results;
+    });
+    check('every contract type is solvable + verifiable', Object.values(genCheck).every(Boolean), JSON.stringify(genCheck));
+
     // UI panels.
     await page.click('[data-tab="network"]');
     check('network panel renders cards', (await page.locator('.srv-card').count()) >= 3);
@@ -182,7 +261,7 @@ async function main() {
       (await page.locator('#ws-lesson').isVisible())
       && (await page.locator('#panel-workspace #editor-root').isVisible())
       && (await page.locator('#panel-workspace #term-in').isVisible()));
-    check('lessons render', (await page.locator('#ws-lesson .lesson').count()) === 9);
+    check('lessons render', (await page.locator('#ws-lesson .lesson').count()) === 10);
     await page.click('#nav-lessons'); // toggle closed again
     check('lesson pane toggles closed', await page.evaluate(() => document.getElementById('ws-lesson').hidden));
     const lesson0Done = await page.evaluate(() => window.__cyberspyke.game.s.lessonsDone['wake'] === true);
@@ -195,10 +274,11 @@ async function main() {
       (await page.locator('#panel-workspace #editor-root').isVisible())
       && (await page.locator('#panel-workspace #term-in').isVisible()));
 
-    // Persistence round-trip.
-    await page.evaluate(() => window.__cyberspyke.game.save());
+    // Persistence round-trip (capture money at save time — contracts changed it since the hack test).
+    const moneyAtSave = await page.evaluate(() => { window.__cyberspyke.game.save(); return window.__cyberspyke.game.s.money; });
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('cyberspyke_save_v1')));
-    check('save persists money + files', saved.money === moneyAfter && 'e2e_loop.py' in saved.files);
+    check('save persists money + files', saved.money === moneyAtSave && 'e2e_loop.py' in saved.files);
+    check('save persists contracts state', 'contracts' in saved && 'koipond' in saved.contracts === false);
 
     check('no unexpected console errors', consoleErrors.length === 0, consoleErrors.join(' | ').slice(0, 300));
     await page.close();
