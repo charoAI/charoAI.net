@@ -181,9 +181,13 @@ async function main() {
     check('lessons render', (await page.locator('.lesson').count()) === 9);
     const lesson0Done = await page.evaluate(() => window.__cyberspyke.game.s.lessonsDone['wake'] === true);
     check('lesson 0 auto-completed (dustbox rooted)', lesson0Done);
-    await page.click('[data-tab="editor"]');
+    await page.click('[data-tab="workspace"]');
     await page.click('.ed-file');
     check('editor highlights python', (await page.locator('.ed-hl .py-kw').count()) > 0);
+    // Side-by-side: editor and terminal both visible in the workspace at once.
+    check('editor + terminal share the workspace',
+      (await page.locator('#panel-workspace #editor-root').isVisible())
+      && (await page.locator('#panel-workspace #term-in').isVisible()));
 
     // Persistence round-trip.
     await page.evaluate(() => window.__cyberspyke.game.save());
@@ -240,16 +244,20 @@ async function main() {
     await page3.keyboard.press('Enter'); // BEGIN OPERATION
     await page3.waitForFunction(() => !document.getElementById('intro').classList.contains('visible'), null, { timeout: 3000 });
     check('intro closes into the game', true);
-    check('new operatives land on lessons', await page3.evaluate(() =>
-      document.getElementById('panel-lessons').classList.contains('active')));
+    check('BEGIN OPERATION lands on the workspace (not lessons)', await page3.evaluate(() =>
+      document.getElementById('panel-workspace').classList.contains('active')
+      && !document.getElementById('panel-lessons').classList.contains('active')));
     check('intro marked as seen', await page3.evaluate(() => localStorage.getItem('cyberspyke_seen_intro') === '1'));
     // Reopen from the brand; seen flag means no boot log, straight to menu.
     await page3.click('.brand');
     await page3.waitForSelector('.intro-menu', { timeout: 3000 });
     check('brand click reopens title menu', true);
+    // FIELD TRAINING must go somewhere DIFFERENT from BEGIN OPERATION (the reported bug).
+    await page3.keyboard.press('ArrowDown'); // BEGIN -> FIELD TRAINING
     await page3.keyboard.press('Enter');
     await page3.waitForFunction(() => !document.getElementById('intro').classList.contains('visible'), null, { timeout: 3000 });
-    check('menu closes back into the game', true);
+    check('FIELD TRAINING lands on lessons (distinct from BEGIN)', await page3.evaluate(() =>
+      document.getElementById('panel-lessons').classList.contains('active')));
     await ctx3.close();
   } finally {
     await browser.close();

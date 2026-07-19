@@ -24,7 +24,7 @@ async function boot() {
 
   const ctx = {
     toast: (msg, cls) => ui.toast(msg, cls),
-    openEditor: (file) => { ui.showTab('editor'); editor.open(file); },
+    openEditor: (file) => { ui.showTab('workspace'); editor.open(file); },
     showTab: (name) => ui.showTab(name),
     openMenu: () => {
       intro.show({ returning: true }).then((action) => handleMenu(action));
@@ -45,11 +45,12 @@ async function boot() {
   );
   new Lessons(document.getElementById('lessons-root'), ctx);
 
-  ui.onShowTab = (name) => { if (name === 'terminal') terminal.focus(); };
-  document.getElementById('panel-terminal').addEventListener('click', (e) => {
+  ui.onShowTab = (name) => { if (name === 'workspace') terminal.focus(); };
+  document.getElementById('ws-terminal').addEventListener('click', (e) => {
     if (window.getSelection()?.toString()) return; // don't steal a text selection
     terminal.focus();
   });
+  setupSplit();
 
   function handleMenu(action) {
     if (action === 'lessons') ui.showTab('lessons');
@@ -57,11 +58,42 @@ async function boot() {
     else if (action === 'new') {
       terminal.host = 'home';
       terminal.updatePrompt();
-      ui.showTab('lessons'); // fresh operatives start with training in view
-    } else terminal.focus();
+      ui.showTab('workspace'); // Begin Operation drops you at the keyboard
+      terminal.focus();
+    } else { ui.showTab('workspace'); terminal.focus(); }
   }
   introDone.then(handleMenu);
   document.querySelector('.brand').addEventListener('click', () => ctx.openMenu());
+
+  // Drag the divider between editor and terminal to resize (desktop only).
+  function setupSplit() {
+    const ws = document.getElementById('workspace');
+    const divider = document.getElementById('ws-divider');
+    const editorPane = ws.querySelector('.ws-editor');
+    let dragging = false;
+    divider.addEventListener('pointerdown', (e) => {
+      if (window.matchMedia('(max-width: 720px)').matches) return;
+      dragging = true;
+      divider.setPointerCapture(e.pointerId);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+    divider.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const rect = ws.getBoundingClientRect();
+      const pct = Math.max(25, Math.min(75, ((e.clientX - rect.left) / rect.width) * 100));
+      editorPane.style.flex = `0 0 ${pct}%`;
+    });
+    const end = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      try { divider.releasePointerCapture(e.pointerId); } catch { /* already released */ }
+    };
+    divider.addEventListener('pointerup', end);
+    divider.addEventListener('pointercancel', end);
+  }
 
   // Drone income + autosave ticks.
   setInterval(() => {
