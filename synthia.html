@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Synthia is a private, single-operator AI assistant built and run by CharoAI on self-hosted hardware.">
+  <meta property="og:title" content="Synthia | CharoAI">
+  <meta property="og:description" content="A private, single-operator AI assistant built and run by CharoAI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://charoai.net/synthia.html">
+  <title>Synthia | CharoAI</title>
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-code">
+    <pre><code>
+# synthia: one operator, one door
+while alive:
+    msg = await commander.next_message()
+    door = detect_door_toggle(msg) or door
+    reply = brain.think(msg, soul=load_soul(), realm=door)
+    commander.send(reply)
+    </code></pre>
+  </div>
+
+  <header class="site-header">
+    <h1 class="site-title">CharoAI</h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/writings.html">Writings</a></li>
+        <li><a href="/reading.html">Reading</a></li>
+        <li><a href="/resources.html">Resources</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="article-body">
+      <section class="hero">
+        <h2 class="neon">Synthia</h2>
+        <p>A private AI assistant. One operator. Self-hosted.</p>
+      </section>
+
+      <section>
+        <h3 class="highlight">What Synthia is</h3>
+        <p>Synthia is a personal AI assistant built and operated by CharoAI. She runs on hardware the operator owns and is used by exactly one person: her operator. There is no sign-up, no public access, and no multi-user service. This page exists to describe the application honestly and to host its <a href="/privacy.html">privacy policy</a>.</p>
+      </section>
+      <div class="animated-divider"></div>
+
+      <section>
+        <h3 class="highlight">What she does</h3>
+        <ul class="focus-list">
+          <li>Keeps the operator's calendar, task list, and reminders current.</li>
+          <li>Drafts, files, and retrieves documents, spreadsheets, and forms in the operator's own Drive.</li>
+          <li>Reads and sends email on the operator's behalf, on the operator's instruction.</li>
+          <li>Runs research, generates images and video, and coordinates a small fleet of subordinate agents.</li>
+        </ul>
+      </section>
+      <div class="animated-divider"></div>
+
+      <section>
+        <h3 class="highlight">Google account access</h3>
+        <p>To do the work above, Synthia connects to the operator's own Google account through Google's OAuth 2.0 system and uses these services: Google Calendar, Google Tasks, Google Drive, Google Docs, Google Sheets, Google Forms, and Gmail (reading and sending). Access is granted by the operator, used only to carry out the operator's requests, and can be revoked at any time from the operator's Google Account permissions page. Details are in the <a href="/privacy.html">privacy policy</a>.</p>
+      </section>
+      <div class="animated-divider"></div>
+
+      <section>
+        <h3 class="highlight">Built by</h3>
+        <p>Synthia is one of the projects behind the writing on this site: an experiment in persistent memory, internally driven motivation, and a synthetic mind with a character of her own. Questions go through the <a href="/contact.html">contact page</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CharoAI.net All Rights Reserved. &middot; <a href="/privacy.html">Privacy Policy</a></p>
+  </footer>
+
+  <script src="/assets/js/script.js"></script>
+  <script>
+    document.querySelectorAll('.animated-divider').forEach(divider => {
+      divider.style.setProperty('--scroll-delay', `${Math.random() * 4}s`);
+    });
+  </script>
+  <style>
+    .animated-divider { width: 100%; height: 2px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent); position: relative; overflow: hidden; margin: 2rem 0; }
+    .animated-divider::before { content: ""; position: absolute; top: 0; left: -20%; height: 100%; width: 20%; background: linear-gradient(to right, transparent, white, transparent); animation: scroll-light 4s linear infinite; animation-delay: var(--scroll-delay, 0s); }
+    @keyframes scroll-light { 0% { left: -20%; } 100% { left: 100%; } }
+    .article-body h3 { margin-top: 0; }
+  </style>
+</body>
+</html>
