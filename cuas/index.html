@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow">
+  <title>cUAS Assessment Intake</title>
+  <!-- No analytics on this page by design: assessment data stays in the browser. -->
+  <style>
+    :root {
+      --neon: #00ffff;
+      --bg: #0d0d0d;
+      --panel: #151515;
+      --line: #2a2a2a;
+      --text: #f2f2f2;
+      --muted: #9a9a9a;
+      --warn: #ffb347;
+      --ok: #7CFC9A;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Share Tech Mono', ui-monospace, Menlo, Consolas, monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center;
+      padding: .75rem 1rem; background: #0d0d0dee; border-bottom: 1px solid var(--neon);
+    }
+    header h1 { margin: 0; font-size: 1.2rem; color: var(--neon); letter-spacing: .05em; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+    .status { color: var(--muted); font-size: .8rem; }
+    button, .file-btn {
+      font: inherit; font-size: .85rem; cursor: pointer;
+      background: transparent; color: var(--neon); border: 1px solid var(--neon);
+      padding: .35rem .7rem; border-radius: 3px;
+    }
+    button:hover, .file-btn:hover { background: #00ffff1a; }
+    button.danger { color: #ff7a7a; border-color: #ff7a7a; }
+    .file-btn input { display: none; }
+    main { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    .intro { color: var(--muted); line-height: 1.5; }
+    fieldset {
+      border: 1px solid var(--line); background: var(--panel);
+      border-radius: 4px; margin: 1.25rem 0; padding: 1rem 1.1rem 1.2rem;
+    }
+    legend { color: var(--neon); padding: 0 .4rem; font-size: 1.05rem; }
+    .hint { color: var(--muted); font-size: .8rem; margin: .2rem 0 .8rem; line-height: 1.4; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .8rem 1rem; }
+    .full { grid-column: 1 / -1; }
+    label.f { display: flex; flex-direction: column; gap: .3rem; font-size: .85rem; }
+    input[type=text], input[type=number], input[type=date], select, textarea {
+      font: inherit; font-size: .9rem; color: var(--text);
+      background: #0b0b0b; border: 1px solid var(--line); border-radius: 3px; padding: .45rem .5rem; width: 100%;
+    }
+    textarea { min-height: 4.5rem; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 1px solid var(--neon); border-color: var(--neon); }
+    .checks { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .85rem; }
+    .checks label { display: flex; gap: .35rem; align-items: center; cursor: pointer; }
+    .group-title { font-size: .85rem; margin: .2rem 0 .4rem; }
+
+    /* Role switches */
+    .roles { display: grid; gap: .6rem; }
+    .role-row {
+      display: grid; grid-template-columns: minmax(160px, 1fr) auto minmax(180px, 1.4fr);
+      gap: .75rem; align-items: center; padding: .5rem 0; border-bottom: 1px dashed var(--line);
+    }
+    .role-name { font-size: .9rem; }
+    .role-name small { display: block; color: var(--muted); font-size: .72rem; margin-top: .15rem; }
+    .seg { display: inline-flex; border: 1px solid var(--neon); border-radius: 3px; overflow: hidden; }
+    .seg input { position: absolute; opacity: 0; pointer-events: none; }
+    .seg label { padding: .35rem .8rem; cursor: pointer; font-size: .85rem; color: var(--neon); border-right: 1px solid var(--neon); }
+    .seg label:last-of-type { border-right: 0; }
+    .seg input:checked + label { background: var(--neon); color: #000; }
+    .seg input:focus-visible + label { outline: 2px solid #fff; outline-offset: -2px; }
+    .flags { margin-top: 1rem; padding: .75rem .9rem; border-left: 3px solid var(--warn); background: #1d1710; font-size: .85rem; }
+    .flags.clear { border-left-color: var(--ok); background: #101d14; }
+    .flags ul { margin: .4rem 0 0; padding-left: 1.2rem; line-height: 1.45; }
+
+    /* Repeatable groups */
+    .repeat-item { border: 1px solid var(--line); border-radius: 4px; padding: .9rem; margin: .8rem 0; background: #111; }
+    .repeat-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; color: var(--neon); font-size: .9rem; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 640px) {
+      .role-row { grid-template-columns: 1fr; }
+      header { position: static; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>cUAS ASSESSMENT INTAKE</h1>
+  <div class="toolbar">
+    <span class="status" id="status">Not saved</span>
+    <button type="button" id="saveBtn">Save JSON</button>
+    <label class="file-btn">Load JSON<input type="file" id="loadInput" accept="application/json,.json"></label>
+    <button type="button" class="danger" id="clearBtn">Clear</button>
+  </div>
+</header>
+
+<main>
+  <p class="intro">
+    Fill in each section during the assessment. Nothing typed here is sent anywhere — data lives only in this browser
+    (an unsent draft is kept locally) and in JSON files you save. Pass the JSON file between team members to collaborate.
+    Use code names or role titles, not real names, for principals and contacts.
+  </p>
+
+  <form id="intake" autocomplete="off">
+
+    <!-- 0. Engagement -->
+    <fieldset>
+      <legend>0 · Engagement</legend>
+      <div class="grid">
+        <label class="f full">Plan title<input type="text" name="eng.title" placeholder="e.g. Counter-UAS Plan — Site ALPHA and Principal Protection"></label>
+        <label class="f">Client / supported organization<input type="text" name="eng.client"></label>
+        <label class="f">Assessment team lead<input type="text" name="eng.lead"></label>
+        <label class="f full">Team members (role titles)<input type="text" name="eng.team"></label>
+        <label class="f">Assessment start<input type="date" name="eng.start"></label>
+        <label class="f">Assessment end<input type="date" name="eng.end"></label>
+        <label class="f">Report date<input type="date" name="eng.reportDate"></label>
+        <label class="f">Handling marking
+          <select name="eng.marking">
+            <option value="">— select —</option>
+            <option>UNCLASSIFIED</option>
+            <option>CUI</option>
+            <option>Company Confidential</option>
+            <option>Other (see note)</option>
+          </select>
+        </label>
+        <label class="f">Country / area of operations<input type="text" name="eng.country"></label>
+        <label class="f">Host nation (Local)<input type="text" name="eng.hostNation"></label>
+        <label class="f full">Other Country Nationals involved (OCN — not US, not Local)<input type="text" name="eng.ocnNations" placeholder="e.g. coalition partner nations, contracted third-country personnel"></label>
+      </div>
+      <p class="group-title" style="margin-top:1rem">Plan scope</p>
+      <div class="checks">
+        <label><input type="checkbox" name="eng.scope" value="fixed" checked> Fixed site(s)</label>
+        <label><input type="checkbox" name="eng.scope" value="mobile" checked> Mobile principal protection</label>
+      </div>
+    </fieldset>
+
+    <!-- 1. Operator roles -->
+    <fieldset>
+      <legend>1 · Operator Roles</legend>
+      <p class="hint">Who performs each function. These settings drive the plan's legal basis, engagement authority, training, information-sharing and sustainment sections.</p>
+      <div class="roles" id="roles"></div>
+      <div class="grid" style="margin-top:.9rem">
+        <label class="f">System origin (who supplies the cUAS equipment)
+          <select name="roles.systemOrigin">
+            <option value="">— select —</option>
+            <option>US</option><option>OCN</option><option>Local</option><option>Mixed</option><option>TBD</option>
+          </select>
+        </label>
+      </div>
+      <div class="flags" id="flags"></div>
+    </fieldset>
+
+    <!-- 2. Mission & assets -->
+    <fieldset>
+      <legend>2 · Mission &amp; Protected Assets</legend>
+      <div class="grid">
+        <label class="f full">Mission statement<textarea name="mission.statement" placeholder="What the supported organization does and why it must be protected from UAS."></textarea></label>
+        <label class="f full">Critical assets / nodes<textarea name="mission.assets" placeholder="One per line: asset — why it matters"></textarea></label>
+        <label class="f">Worst credible consequence
+          <select name="mission.consequence">
+            <option value="">— select —</option>
+            <option>Low</option><option>Moderate</option><option>High</option><option>Catastrophic</option>
+          </select>
+        </label>
+        <label class="f full">Risk tolerance statement<textarea name="mission.riskTolerance" placeholder="What level of residual risk leadership will accept."></textarea></label>
+      </div>
+    </fieldset>
+
+    <!-- 3. Threat -->
+    <fieldset>
+      <legend>3 · Threat</legend>
+      <p class="group-title">Threat actors</p>
+      <div class="checks" style="margin-bottom:.9rem">
+        <label><input type="checkbox" name="threat.actors" value="careless"> Careless / clueless hobbyist</label>
+        <label><input type="checkbox" name="threat.actors" value="criminal"> Criminal</label>
+        <label><input type="checkbox" name="threat.actors" value="activist"> Activist / protester</label>
+        <label><input type="checkbox" name="threat.actors" value="extremist"> Terrorist / violent extremist</label>
+        <label><input type="checkbox" name="threat.actors" value="state"> State or state proxy</label>
+        <label><input type="checkbox" name="threat.actors" value="insider"> Insider</label>
+      </div>
+      <p class="group-title">UAS threat types</p>
+      <div class="checks" style="margin-bottom:.9rem">
+        <label><input type="checkbox" name="threat.uas" value="cots"> Commercial quadcopter (Group 1)</label>
+        <label><input type="checkbox" name="threat.uas" value="fpv"> FPV / strike drone</label>
+        <label><input type="checkbox" name="threat.uas" value="fiber"> Fiber-optic tethered FPV</label>
+        <label><input type="checkbox" name="threat.uas" value="autonomous"> Autonomous / pre-programmed (no RF link)</label>
+        <label><input type="checkbox" name="threat.uas" value="fixedwing"> Fixed-wing (Group 2)</label>
+        <label><input type="checkbox" name="threat.uas" value="group3"> Group 3+ / one-way attack</label>
+        <label><input type="checkbox" name="threat.uas" value="swarm"> Swarm / multiple simultaneous</label>
+      </div>
+      <p class="group-title">Threat intent</p>
+      <div class="checks" style="margin-bottom:.9rem">
+        <label><input type="checkbox" name="threat.intent" value="isr"> Surveillance / ISR</label>
+        <label><input type="checkbox" name="threat.intent" value="harass"> Harassment / disruption</label>
+        <label><input type="checkbox" name="threat.intent" value="contraband"> Contraband delivery</label>
+        <label><input type="checkbox" name="threat.intent" value="payload"> Weaponized payload attack</label>
+        <label><input type="checkbox" name="threat.intent" value="targeting"> Targeting for follow-on attack</label>
+      </div>
+      <div class="grid">
+        <label class="f">Assessed likelihood
+          <select name="threat.likelihood">
+            <option value="">— select —</option>
+            <option value="1">1 · Rare</option><option value="2">2 · Unlikely</option><option value="3">3 · Possible</option>
+            <option value="4">4 · Likely</option><option value="5">5 · Almost certain</option>
+          </select>
+        </label>
+        <label class="f">Intelligence sources consulted<input type="text" name="threat.sources"></label>
+        <label class="f full">Incident history (date — what happened)<textarea name="threat.history"></textarea></label>
+      </div>
+    </fieldset>
+
+    <!-- 4. Fixed sites -->
+    <fieldset data-scope="fixed">
+      <legend>4 · Fixed Site Survey</legend>
+      <p class="hint">Add one entry per site.</p>
+      <div data-repeat="sites"></div>
+      <button type="button" data-add="sites">+ Add site</button>
+    </fieldset>
+
+    <!-- 5. Principal protection -->
+    <fieldset data-scope="mobile">
+      <legend>5 · Principal Protection</legend>
+      <div class="grid">
+        <label class="f">Principal code name<input type="text" name="mobile.codename"></label>
+        <label class="f">Principal profile / prominence
+          <select name="mobile.profile">
+            <option value="">— select —</option>
+            <option>Low</option><option>Moderate</option><option>High</option><option>Very high</option>
+          </select>
+        </label>
+        <label class="f">Protective detail size<input type="number" min="0" name="mobile.detailSize"></label>
+        <label class="f">Vehicles in package<input type="number" min="0" name="mobile.vehicles"></label>
+        <label class="f">Movements per week<input type="number" min="0" name="mobile.movesPerWeek"></label>
+        <label class="f">Advance lead time (days)<input type="number" min="0" name="mobile.advanceDays"></label>
+        <label class="f">Schedule predictability
+          <select name="mobile.predictability">
+            <option value="">— select —</option>
+            <option>Low (varied)</option><option>Moderate</option><option>High (routine / publicized)</option>
+          </select>
+        </label>
+        <label class="f">Detail carries cUAS kit on movement?
+          <select name="mobile.kit">
+            <option value="">— select —</option>
+            <option>None</option><option>Body-worn / handheld detector</option><option>Vehicle-mounted</option><option>Both</option>
+          </select>
+        </label>
+        <label class="f full">Principal-specific threat notes<textarea name="mobile.threatNotes"></textarea></label>
+      </div>
+      <p class="group-title" style="margin-top:1rem">Recurring venues &amp; routes</p>
+      <div data-repeat="venues"></div>
+      <button type="button" data-add="venues">+ Add venue / route</button>
+    </fieldset>
+
+    <!-- 6. Current capability -->
+    <fieldset>
+      <legend>6 · Current Capability</legend>
+      <p class="group-title">Detection already in place</p>
+      <div class="checks" style="margin-bottom:.9rem">
+        <label><input type="checkbox" name="cap.detect" value="rf"> RF detection</label>
+        <label><input type="checkbox" name="cap.detect" value="remoteid"> Remote ID receiver</label>
+        <label><input type="checkbox" name="cap.detect" value="radar"> Radar</label>
+        <label><input type="checkbox" name="cap.detect" value="eoir"> EO/IR cameras</label>
+        <label><input type="checkbox" name="cap.detect" value="acoustic"> Acoustic</label>
+        <label><input type="checkbox" name="cap.detect" value="visual"> Visual observers only</label>
+      </div>
+      <p class="group-title">Defeat already in place</p>
+      <div class="checks" style="margin-bottom:.9rem">
+        <label><input type="checkbox" name="cap.defeat" value="rfjam"> RF jamming</label>
+        <label><input type="checkbox" name="cap.defeat" value="gnss"> GNSS denial</label>
+        <label><input type="checkbox" name="cap.defeat" value="cyber"> Cyber / protocol takeover</label>
+        <label><input type="checkbox" name="cap.defeat" value="interceptor"> Interceptor drone</label>
+        <label><input type="checkbox" name="cap.defeat" value="kinetic"> Kinetic / hard-kill</label>
+        <label><input type="checkbox" name="cap.defeat" value="passive"> Passive (netting, overhead cover)</label>
+      </div>
+      <div class="grid">
+        <label class="f">Command &amp; control system<input type="text" name="cap.c2"></label>
+        <label class="f">Trained cUAS personnel<input type="number" min="0" name="cap.trained"></label>
+        <label class="f">Written SOPs exist?
+          <select name="cap.sops"><option value="">— select —</option><option>Yes</option><option>Partial</option><option>No</option></select>
+        </label>
+        <label class="f">Last exercise date<input type="date" name="cap.lastExercise"></label>
+        <label class="f full">Observed gaps<textarea name="cap.gaps"></textarea></label>
+      </div>
+    </fieldset>
+
+    <!-- 7. Legal & partners -->
+    <fieldset>
+      <legend>7 · Authorities, Agreements &amp; Partners</legend>
+      <div class="grid">
+        <label class="f">Status of forces / basing agreement
+          <select name="legal.sofa"><option value="">— select —</option><option>In place</option><option>Pending</option><option>None</option><option>N/A</option></select>
+        </label>
+        <label class="f">Host-nation spectrum authorization
+          <select name="legal.spectrum"><option value="">— select —</option><option>Approved</option><option>Pending</option><option>None</option></select>
+        </label>
+        <label class="f">Rules of engagement / use-of-force for cUAS
+          <select name="legal.roe"><option value="">— select —</option><option>Established</option><option>Partial</option><option>None</option></select>
+        </label>
+        <label class="f">Airspace authority coordination
+          <select name="legal.airspace"><option value="">— select —</option><option>Established</option><option>Partial</option><option>None</option></select>
+        </label>
+        <label class="f full">Governing agreements &amp; authorities (list)<textarea name="legal.agreements"></textarea></label>
+        <label class="f full">Partner organizations &amp; liaison roles<textarea name="legal.partners" placeholder="Organization — role — US / OCN / Local"></textarea></label>
+      </div>
+    </fieldset>
+
+    <!-- 8. Constraints -->
+    <fieldset>
+      <legend>8 · Constraints</legend>
+      <div class="grid">
+        <label class="f">Budget band
+          <select name="con.budget">
+            <option value="">— select —</option>
+            <option>&lt; $250K</option><option>$250K – $1M</option><option>$1M – $5M</option><option>&gt; $5M</option>
+          </select>
+        </label>
+        <label class="f">Initial capability target date<input type="date" name="con.ioc"></label>
+        <label class="f full">Footprint / emissions / aesthetic constraints<textarea name="con.footprint"></textarea></label>
+        <label class="f full">Other constraints or assessor notes<textarea name="con.notes"></textarea></label>
+      </div>
+    </fieldset>
+  </form>
+</main>
+
+<template id="tpl-sites">
+  <div class="repeat-item">
+    <div class="repeat-head"><span>Site <span data-index></span></span><button type="button" class="danger" data-remove>Remove</button></div>
+    <div class="grid">
+      <label class="f">Site name / designator<input type="text" data-field="name"></label>
+      <label class="f">Location / grid<input type="text" data-field="location"></label>
+      <label class="f">Site type
+        <select data-field="type">
+          <option value="">— select —</option>
+          <option>Headquarters / office</option><option>Residence</option><option>Base / compound</option>
+          <option>Critical infrastructure</option><option>Venue / stadium</option><option>Other</option>
+        </select>
+      </label>
+      <label class="f">Perimeter length (m)<input type="number" min="0" data-field="perimeter"></label>
+      <label class="f">Terrain
+        <select data-field="terrain">
+          <option value="">— select —</option>
+          <option>Open / flat</option><option>Rolling</option><option>Mountainous</option><option>Urban dense</option><option>Suburban</option><option>Coastal</option>
+        </select>
+      </label>
+      <label class="f">RF environment
+        <select data-field="rf">
+          <option value="">— select —</option><option>Quiet</option><option>Moderate</option><option>Congested</option>
+        </select>
+      </label>
+      <label class="f">Nearest airfield / distance (km)<input type="text" data-field="airfield"></label>
+      <label class="f">Response force time (min)<input type="number" min="0" data-field="responseMin"></label>
+      <label class="f">Overhead cover / hardened shelter
+        <select data-field="cover"><option value="">— select —</option><option>Yes</option><option>Partial</option><option>No</option></select>
+      </label>
+      <label class="f">Power &amp; network for sensors
+        <select data-field="infra"><option value="">— select —</option><option>Available</option><option>Limited</option><option>None</option></select>
+      </label>
+      <label class="f full">Overlooking structures / high ground<textarea data-field="overwatch"></textarea></label>
+      <label class="f full">Likely launch / approach areas<textarea data-field="launch"></textarea></label>
+      <label class="f full">Existing security systems<textarea data-field="security"></textarea></label>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-venues">
+  <div class="repeat-item">
+    <div class="repeat-head"><span>Venue / route <span data-index></span></span><button type="button" class="danger" data-remove>Remove</button></div>
+    <div class="grid">
+      <label class="f">Name<input type="text" data-field="name"></label>
+      <label class="f">Kind
+        <select data-field="kind">
+          <option value="">— select —</option>
+          <option>Outdoor venue</option><option>Indoor venue</option><option>Mixed venue</option><option>Route</option><option>Arrival / departure point</option>
+        </select>
+      </label>
+      <label class="f">Frequency
+        <select data-field="frequency"><option value="">— select —</option><option>One-time</option><option>Occasional</option><option>Recurring</option></select>
+      </label>
+      <label class="f">Expected crowd size<input type="number" min="0" data-field="crowd"></label>
+      <label class="f">Time exposed outdoors (min)<input type="number" min="0" data-field="exposureMin"></label>
+      <label class="f">Publicly announced?
+        <select data-field="public"><option value="">— select —</option><option>Yes</option><option>No</option></select>
+      </label>
+      <label class="f full">Notes (choke points, overwatch, safe havens)<textarea data-field="notes"></textarea></label>
+    </div>
+  </div>
+</template>
+
+<script>
+(function () {
+  'use strict';
+
+  var ROLES = [
+    { key: 'command', name: 'Command', desc: 'Engagement authority & C2' },
+    { key: 'detector', name: 'Detector Operation', desc: 'Sensor operators' },
+    { key: 'effector', name: 'Effector Operation', desc: 'Defeat system operators' },
+    { key: 'management', name: 'System Management', desc: 'Config, cyber, spectrum, data' },
+    { key: 'maintenance', name: 'System Maintenance', desc: 'Sustainment & repair' }
+  ];
+  var PARTIES = ['US', 'OCN', 'Local'];
+  var DRAFT_KEY = 'cuas-intake-draft-v1';
+
+  var form = document.getElementById('intake');
+  var statusEl = document.getElementById('status');
+
+  // ---- Build role switches ----
+  var rolesEl = document.getElementById('roles');
+  ROLES.forEach(function (r) {
+    var row = document.createElement('div');
+    row.className = 'role-row';
+    var seg = PARTIES.map(function (p) {
+      var id = 'role-' + r.key + '-' + p;
+      return '<input type="radio" id="' + id + '" name="roles.' + r.key + '" value="' + p + '">' +
+             '<label for="' + id + '">' + p + '</label>';
+    }).join('');
+    row.innerHTML =
+      '<div class="role-name">' + r.name + '<small>' + r.desc + '</small></div>' +
+      '<div class="seg" role="radiogroup" aria-label="' + r.name + '">' + seg + '</div>' +
+      '<input type="text" name="roles.' + r.key + 'Unit" placeholder="Unit / organization" aria-label="' + r.name + ' unit">';
+    rolesEl.appendChild(row);
+  });
+
+  // ---- Repeatable groups ----
+  function addItem(group, data) {
+    var tpl = document.getElementById('tpl-' + group);
+    var container = form.querySelector('[data-repeat="' + group + '"]');
+    var node = tpl.content.firstElementChild.cloneNode(true);
+    if (data) {
+      node.querySelectorAll('[data-field]').forEach(function (el) {
+        var v = data[el.dataset.field];
+        if (v != null) el.value = v;
+      });
+    }
+    container.appendChild(node);
+    renumber(group);
+  }
+  function renumber(group) {
+    form.querySelectorAll('[data-repeat="' + group + '"] .repeat-item').forEach(function (item, i) {
+      item.querySelector('[data-index]').textContent = i + 1;
+    });
+  }
+  form.addEventListener('click', function (e) {
+    var add = e.target.closest('[data-add]');
+    if (add) { addItem(add.dataset.add); changed(); return; }
+    var rm = e.target.closest('[data-remove]');
+    if (rm) {
+      var item = rm.closest('.repeat-item');
+      var group = item.parentElement.dataset.repeat;
+      item.remove(); renumber(group); changed();
+    }
+  });
+
+  // ---- Serialize / load ----
+  function serialize() {
+    var data = { _schema: 'cuas-intake', _version: 1, _saved: new Date().toISOString() };
+    form.querySelectorAll('[name]').forEach(function (el) {
+      var k = el.name;
+      if (el.type === 'checkbox') {
+        if (!Array.isArray(data[k])) data[k] = [];
+        if (el.checked) data[k].push(el.value);
+      } else if (el.type === 'radio') {
+        if (el.checked) data[k] = el.value;
+        else if (!(k in data)) data[k] = '';
+      } else {
+        data[k] = el.value;
+      }
+    });
+    form.querySelectorAll('[data-repeat]').forEach(function (c) {
+      data[c.dataset.repeat] = Array.prototype.map.call(c.querySelectorAll('.repeat-item'), function (item) {
+        var o = {};
+        item.querySelectorAll('[data-field]').forEach(function (el) { o[el.dataset.field] = el.value; });
+        return o;
+      });
+    });
+    return data;
+  }
+
+  function load(data) {
+    form.reset();
+    form.querySelectorAll('[data-repeat]').forEach(function (c) { c.innerHTML = ''; });
+    form.querySelectorAll('[name]').forEach(function (el) {
+      var v = data[el.name];
+      if (v == null) return;
+      if (el.type === 'checkbox') el.checked = Array.isArray(v) && v.indexOf(el.value) !== -1;
+      else if (el.type === 'radio') el.checked = (el.value === v);
+      else el.value = v;
+    });
+    form.querySelectorAll('[data-repeat]').forEach(function (c) {
+      (data[c.dataset.repeat] || []).forEach(function (row) { addItem(c.dataset.repeat, row); });
+    });
+    refresh();
+  }
+
+  // ---- Role consistency flags ----
+  function roleFlags(d) {
+    var r = {};
+    ROLES.forEach(function (x) { r[x.key] = d['roles.' + x.key]; });
+    var origin = d['roles.systemOrigin'];
+    var flags = [];
+    var unset = ROLES.filter(function (x) { return !r[x.key]; }).map(function (x) { return x.name; });
+    if (unset.length) flags.push('Not yet set: ' + unset.join(', ') + '.');
+
+    if (r.command && r.effector && r.command !== r.effector)
+      flags.push('Command (' + r.command + ') and Effector Operation (' + r.effector + ') differ — the plan will require a written cross-national engagement-authority agreement and aligned rules of engagement.');
+    if (r.command && r.detector && r.command !== r.detector)
+      flags.push('Detector Operation (' + r.detector + ') reports to a different Command (' + r.command + ') — the plan will require a sensor-to-decision handoff procedure and a data-sharing / releasability agreement.');
+    if (r.management && r.effector && r.management !== r.effector)
+      flags.push('System Management (' + r.management + ') and Effector Operation (' + r.effector + ') differ — configuration control and cyber accreditation responsibilities must be split explicitly.');
+    if (origin && origin !== 'Mixed' && origin !== 'TBD') {
+      ['maintenance', 'management'].forEach(function (k) {
+        if (r[k] && r[k] !== origin)
+          flags.push((k === 'maintenance' ? 'System Maintenance' : 'System Management') + ' by ' + r[k] + ' on ' + origin + '-origin equipment — export control, releasability and technical-data access must be resolved before fielding.');
+      });
+    }
+    if (r.effector && r.effector !== 'US' && d['legal.spectrum'] !== 'Approved')
+      flags.push('Effector operated by ' + r.effector + ' without approved host-nation spectrum authorization — RF / GNSS defeat options will be recommended only as contingent.');
+    if (r.effector === 'US' && d['legal.sofa'] && d['legal.sofa'] !== 'In place')
+      flags.push('US effector operation with no status-of-forces / basing agreement in place — the plan will treat active defeat as contingent on that agreement.');
+    var distinct = {};
+    ROLES.forEach(function (x) { if (r[x.key]) distinct[r[x.key]] = 1; });
+    if (Object.keys(distinct).length === 3)
+      flags.push('All three parties (US, OCN, Local) hold roles — the plan will include a combined coordination cell and a common operating picture requirement.');
+    return flags;
+  }
+
+  function renderFlags(d) {
+    var flags = roleFlags(d);
+    var el = document.getElementById('flags');
+    if (!flags.length) {
+      el.className = 'flags clear';
+      el.innerHTML = '<strong>Role check:</strong> no cross-party issues detected.';
+    } else {
+      el.className = 'flags';
+      el.innerHTML = '<strong>Role check — the generated plan will address:</strong><ul>' +
+        flags.map(function (f) { return '<li>' + f + '</li>'; }).join('') + '</ul>';
+    }
+  }
+
+  function applyScope(d) {
+    var scope = d['eng.scope'] || [];
+    form.querySelectorAll('[data-scope]').forEach(function (fs) {
+      fs.classList.toggle('hidden', scope.indexOf(fs.dataset.scope) === -1);
+    });
+  }
+
+  function refresh() {
+    var d = serialize();
+    renderFlags(d);
+    applyScope(d);
+    return d;
+  }
+
+  // ---- Draft autosave (per-browser convenience only) ----
+  var saveTimer;
+  function changed() {
+    var d = refresh();
+    statusEl.textContent = 'Unsaved changes';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); statusEl.textContent = 'Draft kept in this browser'; } catch (e) {}
+    }, 400);
+  }
+  form.addEventListener('input', changed);
+  form.addEventListener('change', changed);
+
+  document.getElementById('saveBtn').addEventListener('click', function () {
+    var d = serialize();
+    var name = (d['eng.title'] || 'cuas-intake').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'cuas-intake';
+    var blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    statusEl.textContent = 'Saved ' + new Date().toLocaleTimeString();
+  });
+
+  document.getElementById('loadInput').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var d = JSON.parse(reader.result);
+        if (d._schema !== 'cuas-intake') throw new Error('Not a cUAS intake file');
+        load(d);
+        statusEl.textContent = 'Loaded ' + file.name;
+        try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (err) {}
+      } catch (err) {
+        alert('Could not load file: ' + err.message);
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function () {
+    if (!confirm('Clear all fields? Save a JSON copy first if you need it.')) return;
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    load({ 'eng.scope': ['fixed', 'mobile'] });
+    statusEl.textContent = 'Cleared';
+  });
+
+  // ---- Init ----
+  var draft = null;
+  try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) {}
+  if (draft && draft._schema === 'cuas-intake') {
+    load(draft);
+    statusEl.textContent = 'Draft restored';
+  } else {
+    addItem('sites');
+    addItem('venues');
+    refresh();
+  }
+})();
+</script>
+</body>
+</html>
